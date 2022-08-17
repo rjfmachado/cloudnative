@@ -249,11 +249,10 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
     securityProfile: {
       azureKeyVaultKms: {
         //keyVaultResourceId: null
-        keyId: aksCluster1kmskey.properties.keyUriWithVersion
-        //keyId: 'https://ricardmakvakskms.vault.azure.net/keys/cluster1kms/ebfef3a74d704c66b3b29e084dcfda73'
+        //keyId: aksCluster1kmskey.properties.keyUriWithVersion
+        keyId: 'https://ricardmakvakskms.vault.azure.net/keys/cluster1kms/ebfef3a74d704c66b3b29e084dcfda73'
         keyVaultNetworkAccess: 'Public'
         enabled: true
-
       }
     }
     kubernetesVersion: '1.23'
@@ -334,6 +333,51 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         scaleDownMode: 'Deallocate'
       }
     ]
+  }
+}
+
+resource configStore 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {
+  name: 'ricardmakms'
+  location: location
+  sku: {
+    name: 'standard'
+  }
+}
+
+resource configStoreKeyValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = {
+  parent: configStore
+  name: 'ricardmakms'
+  properties: {
+    value: aksCluster1kmskey.properties.keyUriWithVersion
+  }
+}
+
+resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
+  name: 'ricardmakms'
+  location: location
+  properties: {
+    reserved: true
+  }
+  sku: {
+    name: 'F1'
+  }
+  kind: 'linux'
+}
+
+resource appService 'Microsoft.Web/sites@2020-06-01' = {
+  name: 'ricardmakms'
+  location: location
+  properties: {
+    serverFarmId: appServicePlan.id
+    siteConfig: {
+      linuxFxVersion: 'node|14-lts'
+      appSettings: [
+        {
+          name: 'test'
+          value: aksCluster1kmskey.properties.keyUriWithVersion
+        }
+      ]
+    }
   }
 }
 
