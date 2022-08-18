@@ -9,3 +9,4 @@ My testbed for Cloud Native services in Azure.
 <https://github.com/cse-labs/kubernetes-in-codespaces>
 <https://keda.sh/>
 <https://keystone-scim.github.io/>
+<https://github.com/cse-labs/kubernetes-in-codespaces>
