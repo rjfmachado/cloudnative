@@ -167,9 +167,25 @@ resource aksCluster1kmskey 'Microsoft.KeyVault/vaults/keys@2022-07-01' = if (dep
   }
 }
 
+resource azwiAppSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = if (deployKeyvault) {
+  name: 'workloadIdentitySecret'
+  parent: keyvaultAks
+  dependsOn: [
+    IamaSecretsOfficer
+  ]
+  properties: {
+    value: 'ThisIsSuperSecret!!!'
+  }
+}
+
 resource roleKeyVaultCryptoOfficer 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployKeyvault) {
   scope: subscription()
   name: '14b46e9e-c2b7-41b4-b07b-48a6ebf60603'
+}
+
+resource roleKeyVaultSecretsOfficer 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployKeyvault) {
+  scope: subscription()
+  name: 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
 }
 
 resource IamaCryptoOfficer 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (deployKeyvault) {
@@ -178,6 +194,16 @@ resource IamaCryptoOfficer 'Microsoft.Authorization/roleAssignments@2020-10-01-p
   properties: {
     principalId: principalId
     roleDefinitionId: roleKeyVaultCryptoOfficer.id
+    principalType: 'User'
+  }
+}
+
+resource IamaSecretsOfficer 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (deployKeyvault) {
+  name: guid(resourceGroup().id, subscription().id, 'Key Vault Secrets Officer')
+  scope: keyvaultAks
+  properties: {
+    principalId: principalId
+    roleDefinitionId: roleKeyVaultSecretsOfficer.id
     principalType: 'User'
   }
 }
@@ -202,6 +228,11 @@ resource roleKeyVaultCryptoUser 'Microsoft.Authorization/roleDefinitions@2022-04
   name: '12338af0-0e69-4776-bea7-57ae8d297424'
 }
 
+resource roleKeyVaultSecretsUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: '4633458b-17de-408a-b874-0445c86b69e6'
+}
+
 resource aksclusterIsNetworkContributor 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
   name: guid(resourceGroup().id, subscription().id, 'Network Contributor')
   scope: virtualNetwork
@@ -212,12 +243,24 @@ resource aksclusterIsNetworkContributor 'Microsoft.Authorization/roleAssignments
   }
 }
 
+//Change to the key and retest
 resource aksclusterIsKeyVaultCryptoUser 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
   name: guid(resourceGroup().id, subscription().id, 'Key Vault Crypto User')
   scope: keyvaultAks
   properties: {
     principalId: cluster1Identity.properties.principalId
     roleDefinitionId: roleKeyVaultCryptoUser.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
+param azwi_APP_CLIENT_ID string
+resource azwiIsKeyVaultSecretUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(azwiAppSecret.id, resourceGroup().id, subscription().id, 'Key Vault Secrets User')
+  scope: azwiAppSecret
+  properties: {
+    principalId: azwi_APP_CLIENT_ID
+    roleDefinitionId: roleKeyVaultSecretsUser.id
     principalType: 'ServicePrincipal'
   }
 }
@@ -252,10 +295,10 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
     securityProfile: {
       azureKeyVaultKms: {
         //keyVaultResourceId: null
-        //keyId: aksCluster1kmskey.properties.keyUriWithVersion
-        keyId: 'https://ricardmakvakskms.vault.azure.net/keys/cluster1kms/ebfef3a74d704c66b3b29e084dcfda73'
+        keyId: aksCluster1kmskey.properties.keyUriWithVersion
+        //keyId: 'https://ricardmakvakskms.vault.azure.net/keys/cluster1kms/ebfef3a74d704c66b3b29e084dcfda73'
         keyVaultNetworkAccess: 'Public'
-        enabled: true
+        enabled: false
       }
     }
     kubernetesVersion: '1.23'
@@ -352,35 +395,6 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
 //   name: 'ricardmakms'
 //   properties: {
 //     value: aksCluster1kmskey.properties.keyUriWithVersion
-//   }
-// }
-
-// resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
-//   name: 'ricardmakms'
-//   location: location
-//   properties: {
-//     reserved: true
-//   }
-//   sku: {
-//     name: 'F1'
-//   }
-//   kind: 'linux'
-// }
-
-// resource appService 'Microsoft.Web/sites@2020-06-01' = {
-//   name: 'ricardmakms'
-//   location: location
-//   properties: {
-//     serverFarmId: appServicePlan.id
-//     siteConfig: {
-//       linuxFxVersion: 'node|14-lts'
-//       appSettings: [
-//         {
-//           name: 'test'
-//           value: aksCluster1kmskey.properties.keyUriWithVersion
-//         }
-//       ]
-//     }
 //   }
 // }
 
