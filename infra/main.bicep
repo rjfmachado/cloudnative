@@ -246,6 +246,9 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         '7fea8567-e0aa-40dd-bcd6-cbb6d556b4d3'
       ]
     }
+    oidcIssuerProfile: {
+      enabled: true
+    }
     securityProfile: {
       azureKeyVaultKms: {
         //keyVaultResourceId: null
@@ -336,50 +339,50 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
   }
 }
 
-resource configStore 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {
-  name: 'ricardmakms'
-  location: location
-  sku: {
-    name: 'standard'
-  }
-}
+// resource configStore 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {
+//   name: 'ricardmakms'
+//   location: location
+//   sku: {
+//     name: 'standard'
+//   }
+// }
 
-resource configStoreKeyValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = {
-  parent: configStore
-  name: 'ricardmakms'
-  properties: {
-    value: aksCluster1kmskey.properties.keyUriWithVersion
-  }
-}
+// resource configStoreKeyValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = {
+//   parent: configStore
+//   name: 'ricardmakms'
+//   properties: {
+//     value: aksCluster1kmskey.properties.keyUriWithVersion
+//   }
+// }
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
-  name: 'ricardmakms'
-  location: location
-  properties: {
-    reserved: true
-  }
-  sku: {
-    name: 'F1'
-  }
-  kind: 'linux'
-}
+// resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
+//   name: 'ricardmakms'
+//   location: location
+//   properties: {
+//     reserved: true
+//   }
+//   sku: {
+//     name: 'F1'
+//   }
+//   kind: 'linux'
+// }
 
-resource appService 'Microsoft.Web/sites@2020-06-01' = {
-  name: 'ricardmakms'
-  location: location
-  properties: {
-    serverFarmId: appServicePlan.id
-    siteConfig: {
-      linuxFxVersion: 'node|14-lts'
-      appSettings: [
-        {
-          name: 'test'
-          value: aksCluster1kmskey.properties.keyUriWithVersion
-        }
-      ]
-    }
-  }
-}
+// resource appService 'Microsoft.Web/sites@2020-06-01' = {
+//   name: 'ricardmakms'
+//   location: location
+//   properties: {
+//     serverFarmId: appServicePlan.id
+//     siteConfig: {
+//       linuxFxVersion: 'node|14-lts'
+//       appSettings: [
+//         {
+//           name: 'test'
+//           value: aksCluster1kmskey.properties.keyUriWithVersion
+//         }
+//       ]
+//     }
+//   }
+// }
 
-output keyuri string = aksCluster1kmskey.properties.keyUri
-output kuriversion string = aksCluster1kmskey.properties.keyUriWithVersion
+output kmsKeyUriVersion string = aksCluster1kmskey.properties.keyUriWithVersion
+output aksoOidcIssuerURL string = managedCluster.properties.oidcIssuerProfile.issuerURL
