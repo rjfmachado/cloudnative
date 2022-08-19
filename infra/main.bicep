@@ -6,10 +6,31 @@ param tags object = {
   source: 'github.com/rjfmachado/cloudnative'
 }
 
-// ## Network ##
 param deployNetwork bool = true
 param virtualNetworkName string = 'network'
 param virtualNetworkDNSServers array = []
+
+param deployKeyvault bool = true
+param keyvaultName string = 'ricardmakvakskms'
+param principalId string
+
+param deployCluster bool = true
+param clusterName string = 'cloudnative'
+
+resource roleKeyVaultCryptoOfficer 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployKeyvault) {
+  scope: subscription()
+  name: '14b46e9e-c2b7-41b4-b07b-48a6ebf60603'
+}
+
+resource roleKeyVaultSecretsOfficer 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployKeyvault) {
+  scope: subscription()
+  name: 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
+}
+
+// resource roleKeyVaultSecretsUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+//   scope: subscription()
+//   name: '4633458b-17de-408a-b874-0445c86b69e6'
+// }
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = if (deployNetwork) {
   name: virtualNetworkName
@@ -123,11 +144,6 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = if (dep
   }
 }
 
-// ## Key Vault ##
-
-param deployKeyvault bool = true
-param keyvaultName string = 'ricardmakvakskms'
-param principalId string
 resource keyvaultAks 'Microsoft.KeyVault/vaults@2022-07-01' = if (deployKeyvault) {
   name: keyvaultName
   location: location
@@ -147,7 +163,7 @@ resource keyvaultAks 'Microsoft.KeyVault/vaults@2022-07-01' = if (deployKeyvault
   }
 }
 
-resource aksCluster1kmskey 'Microsoft.KeyVault/vaults/keys@2022-07-01' = if (deployKeyvault) {
+resource keyAksCluster1kms 'Microsoft.KeyVault/vaults/keys@2022-07-01' = if (deployKeyvault) {
   name: 'cluster1kms'
   parent: keyvaultAks
   dependsOn: [
@@ -167,27 +183,7 @@ resource aksCluster1kmskey 'Microsoft.KeyVault/vaults/keys@2022-07-01' = if (dep
   }
 }
 
-resource azwiAppSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = if (deployKeyvault) {
-  name: 'workloadIdentitySecret'
-  parent: keyvaultAks
-  dependsOn: [
-    IamaSecretsOfficer
-  ]
-  properties: {
-    value: 'ThisIsSuperSecret!!!'
-  }
-}
-
-resource roleKeyVaultCryptoOfficer 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployKeyvault) {
-  scope: subscription()
-  name: '14b46e9e-c2b7-41b4-b07b-48a6ebf60603'
-}
-
-resource roleKeyVaultSecretsOfficer 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployKeyvault) {
-  scope: subscription()
-  name: 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
-}
-
+//Grant me rights to create keys
 resource IamaCryptoOfficer 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (deployKeyvault) {
   name: guid(resourceGroup().id, subscription().id, 'Key Vault Crypto Officer')
   scope: keyvaultAks
@@ -198,6 +194,7 @@ resource IamaCryptoOfficer 'Microsoft.Authorization/roleAssignments@2020-10-01-p
   }
 }
 
+//Grant me rights to create secrets
 resource IamaSecretsOfficer 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (deployKeyvault) {
   name: guid(resourceGroup().id, subscription().id, 'Key Vault Secrets Officer')
   scope: keyvaultAks
@@ -207,10 +204,6 @@ resource IamaSecretsOfficer 'Microsoft.Authorization/roleAssignments@2020-10-01-
     principalType: 'User'
   }
 }
-
-// ## AKS ##
-param deployCluster bool = true
-param clusterName string = 'cloudnative'
 
 resource cluster1Identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
   name: clusterName
@@ -228,11 +221,6 @@ resource roleKeyVaultCryptoUser 'Microsoft.Authorization/roleDefinitions@2022-04
   name: '12338af0-0e69-4776-bea7-57ae8d297424'
 }
 
-resource roleKeyVaultSecretsUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  scope: subscription()
-  name: '4633458b-17de-408a-b874-0445c86b69e6'
-}
-
 resource aksclusterIsNetworkContributor 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
   name: guid(resourceGroup().id, subscription().id, 'Network Contributor')
   scope: virtualNetwork
@@ -244,23 +232,12 @@ resource aksclusterIsNetworkContributor 'Microsoft.Authorization/roleAssignments
 }
 
 //Change to the key and retest
-resource aksclusterIsKeyVaultCryptoUser 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+resource aksclusterIsKeyCryptoUser 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
   name: guid(resourceGroup().id, subscription().id, 'Key Vault Crypto User')
-  scope: keyvaultAks
+  scope: keyAksCluster1kms
   properties: {
     principalId: cluster1Identity.properties.principalId
     roleDefinitionId: roleKeyVaultCryptoUser.id
-    principalType: 'ServicePrincipal'
-  }
-}
-
-param azwi_APP_CLIENT_ID string
-resource azwiIsKeyVaultSecretUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(azwiAppSecret.id, resourceGroup().id, subscription().id, 'Key Vault Secrets User')
-  scope: azwiAppSecret
-  properties: {
-    principalId: azwi_APP_CLIENT_ID
-    roleDefinitionId: roleKeyVaultSecretsUser.id
     principalType: 'ServicePrincipal'
   }
 }
@@ -270,7 +247,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
   location: location
   tags: tags
   dependsOn: [
-    aksclusterIsKeyVaultCryptoUser
+    aksclusterIsKeyCryptoUser
     aksclusterIsNetworkContributor
   ]
   identity: {
@@ -295,13 +272,13 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
     securityProfile: {
       azureKeyVaultKms: {
         //keyVaultResourceId: null
-        keyId: aksCluster1kmskey.properties.keyUriWithVersion
+        keyId: keyAksCluster1kms.properties.keyUriWithVersion
         //keyId: 'https://ricardmakvakskms.vault.azure.net/keys/cluster1kms/ebfef3a74d704c66b3b29e084dcfda73'
         keyVaultNetworkAccess: 'Public'
         enabled: false
       }
     }
-    kubernetesVersion: '1.23'
+    kubernetesVersion: '1.24'
     networkProfile: {
       networkMode: 'transparent'
       networkPlugin: 'azure'
@@ -398,5 +375,5 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
 //   }
 // }
 
-output kmsKeyUriVersion string = aksCluster1kmskey.properties.keyUriWithVersion
+output kmsKeyUriVersion string = keyAksCluster1kms.properties.keyUriWithVersion
 output aksoOidcIssuerURL string = managedCluster.properties.oidcIssuerProfile.issuerURL

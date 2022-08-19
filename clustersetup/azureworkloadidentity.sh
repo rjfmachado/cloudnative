@@ -3,5 +3,3 @@ helm install workload-identity-webhook azure-workload-identity/workload-identity
    --namespace azure-workload-identity-system \
    --create-namespace \
    --set azureTenantID="${AZURE_TENANT_ID}"
-
-azwi serviceaccount create phase app --aad-application-name azwi
