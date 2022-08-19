@@ -53,49 +53,21 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = if (dep
         }
       }
       {
-        name: 'aks-system-pods'
-        properties: {
-          addressPrefix: '10.0.1.0/24'
-          delegations: [
-            {
-              name: 'Microsoft.ContainerService/managedClusters'
-              properties: {
-                serviceName: 'Microsoft.ContainerService/managedClusters'
-              }
-            }
-          ]
-        }
-      }
-      {
         name: 'aks-monitor-nodepool'
         properties: {
-          addressPrefix: '10.0.2.0/24'
-        }
-      }
-      {
-        name: 'aks-monitor-pods'
-        properties: {
-          addressPrefix: '10.0.3.0/24'
-          delegations: [
-            {
-              name: 'Microsoft.ContainerService/managedClusters'
-              properties: {
-                serviceName: 'Microsoft.ContainerService/managedClusters'
-              }
-            }
-          ]
+          addressPrefix: '10.0.1.0/24'
         }
       }
       {
         name: 'aks-app1-nodepool'
         properties: {
-          addressPrefix: '10.0.4.0/24'
+          addressPrefix: '10.0.2.0/24'
         }
       }
       {
-        name: 'aks-app1-pods'
+        name: 'aks-pods'
         properties: {
-          addressPrefix: '10.0.5.0/24'
+          addressPrefix: '10.0.16.0/22'
           delegations: [
             {
               name: 'Microsoft.ContainerService/managedClusters'
@@ -119,24 +91,16 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = if (dep
     name: 'aks-system-nodepool'
   }
 
-  resource subnetAksSystemPods 'subnets' existing = {
-    name: 'aks-system-pods'
-  }
-
   resource subnetAksMonitorNodepool 'subnets' existing = {
     name: 'aks-monitor-nodepool'
-  }
-
-  resource subnetAksMonitorPods 'subnets' existing = {
-    name: 'aks-monitor-pods'
   }
 
   resource subnetAksApp1Nodepool 'subnets' existing = {
     name: 'aks-app1-nodepool'
   }
 
-  resource subnetAksApp1Pods 'subnets' existing = {
-    name: 'aks-app1-pods'
+  resource subnetAksPods 'subnets' existing = {
+    name: 'aks-pods'
   }
 
   resource subnetAzureBastion 'subnets' existing = {
@@ -278,7 +242,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         enabled: false
       }
     }
-    kubernetesVersion: '1.24'
+    kubernetesVersion: '1.23'
     networkProfile: {
       networkMode: 'transparent'
       networkPlugin: 'azure'
@@ -302,7 +266,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         maxCount: 3
         minCount: 1
         vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
-        podSubnetID: virtualNetwork::subnetAksApp1Pods.id
+        podSubnetID: virtualNetwork::subnetAksPods.id
         availabilityZones: [
           '1'
           '2'
@@ -312,68 +276,61 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
           maxSurge: '50%'
         }
         scaleDownMode: 'Deallocate'
-      }
-      {
-        name: 'monitoring'
-        mode: 'User'
-        count: 1
-        vmSize: 'Standard_B2s'
-        osType: 'Linux'
-        enableAutoScaling: true
-        maxCount: 3
-        minCount: 1
-        vnetSubnetID: virtualNetwork::subnetAksMonitorNodepool.id
-        podSubnetID: virtualNetwork::subnetAksMonitorPods.id
-        availabilityZones: [
-          '1'
-          '2'
-          '3'
+        nodeTaints: [
+          'CriticalAddonsOnly=true:NoSchedule'
         ]
-        upgradeSettings: {
-          maxSurge: '50%'
-        }
-        scaleDownMode: 'Deallocate'
-      }
-      {
-        name: 'app'
-        mode: 'User'
-        count: 1
-        vmSize: 'Standard_B2s'
-        osType: 'Linux'
-        enableAutoScaling: true
-        maxCount: 3
-        minCount: 1
-        vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
-        podSubnetID: virtualNetwork::subnetAksApp1Pods.id
-        availabilityZones: [
-          '1'
-          '2'
-          '3'
-        ]
-        upgradeSettings: {
-          maxSurge: '50%'
-        }
-        scaleDownMode: 'Deallocate'
       }
     ]
   }
+
+  resource test 'agentPools' = {
+    name: 'monitoring'
+    properties: {
+      mode: 'User'
+      count: 1
+      vmSize: 'Standard_B2s'
+      osType: 'Linux'
+      enableAutoScaling: true
+      maxCount: 3
+      minCount: 1
+      vnetSubnetID: virtualNetwork::subnetAksMonitorNodepool.id
+      podSubnetID: virtualNetwork::subnetAksPods.id
+      availabilityZones: [
+        '1'
+        '2'
+        '3'
+      ]
+      upgradeSettings: {
+        maxSurge: '50%'
+      }
+      scaleDownMode: 'Deallocate'
+    }
+  }
+
+  resource app 'agentPools' = {
+    name: 'app'
+    properties: {
+      mode: 'User'
+      count: 1
+      vmSize: 'Standard_B2s'
+      osType: 'Linux'
+      enableAutoScaling: true
+      maxCount: 3
+      minCount: 1
+      vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
+      podSubnetID: virtualNetwork::subnetAksPods.id
+      availabilityZones: [
+        '1'
+        '2'
+        '3'
+      ]
+      upgradeSettings: {
+        maxSurge: '50%'
+      }
+      scaleDownMode: 'Deallocate'
+    }
+  }
 }
-
-// resource configStore 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {
-//   name: 'ricardmakms'
-//   location: location
-//   sku: {
-//     name: 'standard'
-//   }
-// }
-
-// resource configStoreKeyValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = {
-//   parent: configStore
-//   name: 'ricardmakms'
-//   properties: {
-//     value: aksCluster1kmskey.properties.keyUriWithVersion
-//   }
-// }
 
 output kmsKeyUriVersion string = keyAksCluster1kms.properties.keyUriWithVersion
 output aksoOidcIssuerURL string = managedCluster.properties.oidcIssuerProfile.issuerURL
