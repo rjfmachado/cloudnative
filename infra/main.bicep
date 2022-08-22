@@ -287,7 +287,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
     name: 'system'
   }
 
-  resource test 'agentPools' = {
+  resource monitoring 'agentPools' = {
     name: 'monitoring'
     properties: {
       mode: 'User'
@@ -313,6 +313,9 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
 
   resource app 'agentPools' = {
     name: 'app'
+    dependsOn: [
+      monitoring
+    ]
     properties: {
       mode: 'User'
       count: 1
