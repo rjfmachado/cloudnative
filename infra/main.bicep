@@ -283,6 +283,10 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
     ]
   }
 
+  resource system 'agentPools' existing = {
+    name: 'system'
+  }
+
   resource test 'agentPools' = {
     name: 'monitoring'
     properties: {
