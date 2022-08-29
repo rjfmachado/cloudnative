@@ -11,11 +11,12 @@ param virtualNetworkName string = 'network'
 param virtualNetworkDNSServers array = []
 
 param deployKeyvault bool = true
-param keyvaultName string = 'ricardmakvakskms'
+param keyvaultName string = 'ricardmakvakskms1'
 param principalId string
 
 param deployCluster bool = true
 param clusterName string = 'cloudnative'
+param aksAdminGroupId string = '7fea8567-e0aa-40dd-bcd6-cbb6d556b4d3'
 
 resource roleKeyVaultCryptoOfficer 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployKeyvault) {
   scope: subscription()
@@ -227,7 +228,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
     aadProfile: {
       managed: true
       adminGroupObjectIDs: [
-        '7fea8567-e0aa-40dd-bcd6-cbb6d556b4d3'
+        aksAdminGroupId
       ]
     }
     oidcIssuerProfile: {
@@ -259,6 +260,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
       {
         name: 'system'
         mode: 'System'
+        type: 'VirtualMachineScaleSets'
         count: 1
         vmSize: 'Standard_B2s'
         osType: 'Linux'
@@ -291,6 +293,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
     name: 'monitoring'
     properties: {
       mode: 'User'
+      type: 'VirtualMachineScaleSets'
       count: 1
       vmSize: 'Standard_B2s'
       osType: 'Linux'
@@ -318,6 +321,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
     ]
     properties: {
       mode: 'User'
+      type: 'VirtualMachineScaleSets'
       count: 1
       vmSize: 'Standard_B2s'
       osType: 'Linux'
@@ -338,6 +342,25 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
     }
   }
 }
+
+param fluxGitOpsAddon bool = true
+
+resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2020-07-01-preview' = if (fluxGitOpsAddon) {
+  name: 'flux'
+  scope: managedCluster
+  properties: {
+    extensionType: 'microsoft.flux'
+    autoUpgradeMinorVersion: true
+    releaseTrain: 'Stable'
+    scope: {
+      cluster: {
+        releaseNamespace: 'flux-system'
+      }
+    }
+    configurationProtectedSettings: {}
+  }
+}
+output fluxReleaseNamespace string = fluxGitOpsAddon ? fluxAddon.properties.scope.cluster.releaseNamespace : ''
 
 output kmsKeyUriVersion string = keyAksCluster1kms.properties.keyUriWithVersion
 output aksoOidcIssuerURL string = managedCluster.properties.oidcIssuerProfile.issuerURL

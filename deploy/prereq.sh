@@ -1,4 +1,1 @@
-
-
-
-
+az ad group create --display-name ricardmaaksadmins --mail-nickname ricardmaaksadmins

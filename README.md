@@ -4,7 +4,9 @@ My testbed for Cloud Native services in Azure.
 
 ## Things to try
 
-* [ ] [Azure AD Workload Identity](https://azure.github.io/azure-workload-identity/)
+* [*] [Azure AD Workload Identity](https://azure.github.io/azure-workload-identity/)
+* [ ] Flux/AKS GitOps
+
 <https://docs.github.com/en/packages/learn-github-packages>
 <https://github.com/Azure-Samples/azure-opensource-labs#azure-open-source-labs>
 <https://github.com/cse-labs/kubernetes-in-codespaces>
