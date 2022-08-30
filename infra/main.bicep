@@ -17,6 +17,8 @@ param principalId string
 param deployCluster bool = true
 param clusterName string = 'cloudnative'
 param aksAdminGroupId string = '7fea8567-e0aa-40dd-bcd6-cbb6d556b4d3'
+param kubernetesVersion string = '1.24'
+param aksDnsPrefix string = 'ricardmacloudnative'
 
 resource roleKeyVaultCryptoOfficer 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployKeyvault) {
   scope: subscription()
@@ -196,7 +198,6 @@ resource aksclusterIsNetworkContributor 'Microsoft.Authorization/roleAssignments
   }
 }
 
-//Change to the key and retest
 resource aksclusterIsKeyCryptoUser 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
   name: guid(resourceGroup().id, subscription().id, 'Key Vault Crypto User')
   scope: keyAksCluster1kms
@@ -222,7 +223,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
     }
   }
   properties: {
-    dnsPrefix: 'ricardmamanaged'
+    dnsPrefix: aksDnsPrefix
     disableLocalAccounts: true
     enableRBAC: true
     aadProfile: {
@@ -243,7 +244,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         enabled: false
       }
     }
-    kubernetesVersion: '1.23'
+    kubernetesVersion: kubernetesVersion
     networkProfile: {
       networkMode: 'transparent'
       networkPlugin: 'azure'
@@ -282,64 +283,55 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
           'CriticalAddonsOnly=true:NoSchedule'
         ]
       }
+      {
+        name: 'monitoring'
+        mode: 'User'
+        type: 'VirtualMachineScaleSets'
+        count: 1
+        vmSize: 'Standard_B2s'
+        osType: 'Linux'
+        enableAutoScaling: true
+        maxCount: 3
+        minCount: 1
+        vnetSubnetID: virtualNetwork::subnetAksMonitorNodepool.id
+        podSubnetID: virtualNetwork::subnetAksPods.id
+        availabilityZones: [
+          '1'
+          '2'
+          '3'
+        ]
+        upgradeSettings: {
+          maxSurge: '50%'
+        }
+        scaleDownMode: 'Deallocate'
+      }
+      {
+        name: 'apps'
+        mode: 'User'
+        type: 'VirtualMachineScaleSets'
+        count: 1
+        vmSize: 'Standard_B2s'
+        osType: 'Linux'
+        enableAutoScaling: true
+        maxCount: 3
+        minCount: 1
+        vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
+        podSubnetID: virtualNetwork::subnetAksPods.id
+        availabilityZones: [
+          '1'
+          '2'
+          '3'
+        ]
+        upgradeSettings: {
+          maxSurge: '50%'
+        }
+        scaleDownMode: 'Deallocate'
+      }
     ]
   }
 
   resource system 'agentPools' existing = {
     name: 'system'
-  }
-
-  resource monitoring 'agentPools' = {
-    name: 'monitoring'
-    properties: {
-      mode: 'User'
-      type: 'VirtualMachineScaleSets'
-      count: 1
-      vmSize: 'Standard_B2s'
-      osType: 'Linux'
-      enableAutoScaling: true
-      maxCount: 3
-      minCount: 1
-      vnetSubnetID: virtualNetwork::subnetAksMonitorNodepool.id
-      podSubnetID: virtualNetwork::subnetAksPods.id
-      availabilityZones: [
-        '1'
-        '2'
-        '3'
-      ]
-      upgradeSettings: {
-        maxSurge: '50%'
-      }
-      scaleDownMode: 'Deallocate'
-    }
-  }
-
-  resource app 'agentPools' = {
-    name: 'app'
-    dependsOn: [
-      monitoring
-    ]
-    properties: {
-      mode: 'User'
-      type: 'VirtualMachineScaleSets'
-      count: 1
-      vmSize: 'Standard_B2s'
-      osType: 'Linux'
-      enableAutoScaling: true
-      maxCount: 3
-      minCount: 1
-      vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
-      podSubnetID: virtualNetwork::subnetAksPods.id
-      availabilityZones: [
-        '1'
-        '2'
-        '3'
-      ]
-      upgradeSettings: {
-        maxSurge: '50%'
-      }
-      scaleDownMode: 'Deallocate'
-    }
   }
 }
 
