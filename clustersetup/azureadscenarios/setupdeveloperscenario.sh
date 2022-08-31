@@ -23,5 +23,9 @@ az role assignment create --role "Azure Kubernetes Service RBAC Admin" --assigne
 az role definition list | grep Kubernetes
 az role definition list -n "Azure Kubernetes Service RBAC Reader" -o jsonc
 
+
+#delete the user
+az ad user delete --id $USER_DEVELOPER_ID
+
 # wee bit of powershell to clean up role assignments
 Get-AzRoleAssignment | where {$_.SignInName -eq 'developer@ricardomachado.net'} | Remove-AzRoleAssignment
