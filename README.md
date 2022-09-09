@@ -20,8 +20,15 @@ My testbed for Cloud Native services in Azure.
 * [ ] Cluster Setup Improvements
   * [ ] Flux/AKS GitOps
 
+* [ ] Chaos Engineering
+* [ ] Azure Load Testing
+
+* [ ] Container lifecycle
+  * [ ] GitHub Packages
+  * [ ] Azure Container Registry
+  * [ ] <https://techcommunity.microsoft.com/t5/microsoft-defender-for-cloud/securing-containers-from-build-to-runtime/ba-p/3612831>
 * [ ] Security
-  * [ ] Defender for Containers
+  * [ ] Defender for Containers ? ACR
   * [ ] Azure Policy/Gatekeeper
 
 * [ ] Observability
@@ -29,6 +36,9 @@ My testbed for Cloud Native services in Azure.
     * [ ] [Integration with teams](https://github.com/prometheus-msteams/prometheus-msteams)
   * [ ] Grafana
 
+* [ ] Operations
+  * [ ] Updates & Upgrades
+    * [ ] Kured
 
 ## More things
 
