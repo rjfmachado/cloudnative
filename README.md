@@ -19,6 +19,7 @@ My testbed for Cloud Native services in Azure.
   * [ ] Flux/AKS GitOps
 * [ ] Chaos Engineering
 * [ ] Azure Load Testing
+  * [ ] https://techcommunity.microsoft.com/t5/apps-on-azure-blog/discover-your-application-s-breakpoint-using-azure-load-testing/ba-p/3581191
 * [ ] Container lifecycle
   * [ ] GitHub Packages
   * [ ] Azure Container Registry
