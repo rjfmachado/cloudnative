@@ -35,7 +35,7 @@ My testbed for Cloud Native services in Azure.
 * [ ] Operations
   * [ ] Updates & Upgrades
     * [ ] Kured
-
+* [ ] [Apps on Azure blog (AKS)](https://techcommunity.microsoft.com/t5/apps-on-azure-blog/bg-p/AppsonAzureBlog/label-name/Azure%20Kubernetes%20Service)
 ## More things
 
 <https://docs.github.com/en/packages/learn-github-packages>
