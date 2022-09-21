@@ -37,7 +37,7 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "az bicep install && az extension add --name ssh && az extension add --name aks-preview && wget https://github.com/Azure/kubelogin/releases/download/v0.0.20/kubelogin-linux-amd64.zip && unzip kubelogin-linux-amd64.zip && sudo mv bin/linux_amd64/kubelogin /usr/local/bin/ && rm kubelogin-linux-amd64.zip"
+	"postCreateCommand": "az bicep install && az extension add --name ssh && az extension add --name aks-preview && wget https://github.com/Azure/kubelogin/releases/download/v0.0.20/kubelogin-linux-amd64.zip && unzip kubelogin-linux-amd64.zip && sudo mv bin/linux_amd64/kubelogin /usr/local/bin/ && rm kubelogin-linux-amd64.zip && rm -rf bin"
 	//"postStartCommand": "",
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 }

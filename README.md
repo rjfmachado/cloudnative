@@ -9,8 +9,8 @@ My testbed for Cloud Native services in Azure.
     * [ ] https://docs.microsoft.com/en-us/azure/aks/manage-azure-rbac
   * [x] [Azure AD Workload Identity](https://azure.github.io/azure-workload-identity/)
     * [ ] <https://github.com/Azure/azure-workload-identity>
-  * [ ] [Access Kubernetes resources from the Azure portal](https://docs.microsoft.com/en-us/azure/aks/kubernetes-portal)
-  * [ ] Azure AD + Kubernetes Authorization
+  * [x] [Access Kubernetes resources from the Azure portal](https://docs.microsoft.com/en-us/azure/aks/kubernetes-portal)
+  * [x] Azure AD + Kubernetes Authorization
 * [ ] Networking
   * [ ] Kubernetes Network Policy
   * [ ] NSG & Private Endpoints without Policy
