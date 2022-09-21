@@ -1,5 +1,3 @@
-az account set -s dae80d11-9600-4f34-b59a-07628d7d9765
-
 [[ -z "${AZURE_RG_NAME}" ]] && export AZURE_RG_NAME='cloudnative'
 [[ -z "${AZURE_LOCATION}" ]] && export AZURE_LOCATION='uksouth'
 
