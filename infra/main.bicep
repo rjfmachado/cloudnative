@@ -305,6 +305,9 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
           maxSurge: '50%'
         }
         scaleDownMode: 'Deallocate'
+        nodeTaints: [
+          'MonitoringOnly=true:NoSchedule'
+        ]
       }
       {
         name: 'apps'
@@ -334,6 +337,14 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
   resource system 'agentPools' existing = {
     name: 'system'
   }
+
+  resource monitoring 'agentPools' existing = {
+    name: 'monitoring'
+  }
+
+  resource apps 'agentPools' existing = {
+    name: 'apps'
+  }
 }
 
 param fluxGitOpsAddon bool = true
@@ -351,37 +362,6 @@ resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2020-07-01-prev
       }
     }
     configurationProtectedSettings: {}
-  }
-}
-
-resource portalworks 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
-  name: guid('Portal Works')
-  properties: {
-    assignableScopes: [
-      resourceGroup().id
-    ]
-    description: 'Portal Works'
-    roleName: 'Portal Works'
-    permissions: [
-      {
-        actions: [
-          'Microsoft.Authorization/*/read'
-          'Microsoft.Insights/alertRules/*'
-          'Microsoft.Resources/deployments/write'
-          'Microsoft.Resources/subscriptions/operationresults/read'
-          'Microsoft.Resources/subscriptions/read'
-          'Microsoft.Resources/subscriptions/resourceGroups/read'
-          'Microsoft.Support/*'
-        ]
-        dataActions: [
-          'Microsoft.ContainerService/managedClusters/namespaces/read'
-        ]
-        notActions: [
-        ]
-        notDataActions: [
-        ]
-      }
-    ]
   }
 }
 
