@@ -18,6 +18,9 @@ param deployCluster bool = true
 param clusterName string = 'cloudnative'
 param aksAdminGroupId string = '7fea8567-e0aa-40dd-bcd6-cbb6d556b4d3'
 param kubernetesVersion string = '1.24'
+param kubernetesVersionSystemPool string = kubernetesVersion
+param kubernetesVersionMonitoringPool string = kubernetesVersion
+param kubernetesVersionAppsPool string = kubernetesVersion
 param aksDnsPrefix string = 'ricardmacloudnative'
 
 resource roleKeyVaultCryptoOfficer 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployKeyvault) {
@@ -263,6 +266,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         name: 'system'
         mode: 'System'
         type: 'VirtualMachineScaleSets'
+        orchestratorVersion: kubernetesVersionSystemPool
         count: 1
         vmSize: 'Standard_B2s'
         osType: 'Linux'
@@ -288,6 +292,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         name: 'monitoring'
         mode: 'User'
         type: 'VirtualMachineScaleSets'
+        orchestratorVersion: kubernetesVersionMonitoringPool
         count: 1
         vmSize: 'Standard_B2s'
         osType: 'Linux'
@@ -313,6 +318,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         name: 'apps'
         mode: 'User'
         type: 'VirtualMachineScaleSets'
+        orchestratorVersion: kubernetesVersionAppsPool
         count: 1
         vmSize: 'Standard_B2s'
         osType: 'Linux'
