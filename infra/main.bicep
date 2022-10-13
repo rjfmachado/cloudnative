@@ -273,6 +273,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         enableAutoScaling: true
         maxCount: 3
         minCount: 1
+        osSKU: 'CBLMariner'
         vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
         podSubnetID: virtualNetwork::subnetAksPods.id
         availabilityZones: [
@@ -299,6 +300,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         enableAutoScaling: true
         maxCount: 3
         minCount: 1
+        osSKU: 'CBLMariner'
         vnetSubnetID: virtualNetwork::subnetAksMonitorNodepool.id
         podSubnetID: virtualNetwork::subnetAksPods.id
         availabilityZones: [
@@ -325,6 +327,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         enableAutoScaling: true
         maxCount: 3
         minCount: 1
+        osSKU: 'CBLMariner'
         vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
         podSubnetID: virtualNetwork::subnetAksPods.id
         availabilityZones: [
