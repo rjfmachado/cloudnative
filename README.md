@@ -15,6 +15,7 @@ My testbed for Cloud Native services in Azure.
   * [ ] Kubernetes Network Policy
   * [ ] NSG & Private Endpoints without Policy
   * [ ] external-dns
+  * [ ] NGINX WAF <https://systemweakness.com/nginx-ingress-waf-with-modsecurity-from-zero-to-hero-fa284cb6f54a>
 * [ ] Cluster Setup Improvements
   * [ ] Flux/AKS GitOps
 * [ ] Chaos Engineering
