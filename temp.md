@@ -5,3 +5,9 @@ https://learn.microsoft.com/en-us/azure/azure-arc/kubernetes/tutorial-use-gitops
 https://techcommunity.microsoft.com/t5/azure-global/gitops-and-secret-management-with-aks-flux-cd-sops-and-azure-key/ba-p/2280068
 https://samcogan.com/enable-aks-flux-extension-with-infrastructure-as-code/
 https://github.com/adrianmo/aks-flux
+
+
+
+https://learn.microsoft.com/en-us/azure/kubernetes-fleet/overview
+https://learn.microsoft.com/en-us/azure/aks/azure-cni-overlay
+https://isovalent.com/blog/post/azure-cni-cilium/
