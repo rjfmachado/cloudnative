@@ -28,6 +28,7 @@ My testbed for Cloud Native services in Azure.
 * [ ] Security
   * [ ] Defender for Containers ? ACR
   * [ ] Azure Policy/Gatekeeper
+  * [ ] https://techcommunity.microsoft.com/t5/azure-governance-and-management/azure-policy-announces-enhancements-for-gradual-rollout-custom/ba-p/3645336
 * [ ] Deployment
   * [ ] [Kubevela](https://kubevela.io/)
 * [ ] Observability
