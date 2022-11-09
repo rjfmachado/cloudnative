@@ -12,6 +12,8 @@ My testbed for Cloud Native services in Azure.
   * [x] [Access Kubernetes resources from the Azure portal](https://docs.microsoft.com/en-us/azure/aks/kubernetes-portal)
   * [x] Azure AD + Kubernetes Authorization
 * [ ] Networking
+  * [ ] https://learn.microsoft.com/en-us/azure/aks/azure-cni-powered-by-cilium
+  * [ ] Network Overlay
   * [ ] Kubernetes Network Policy
   * [ ] NSG & Private Endpoints without Policy
   * [ ] external-dns
