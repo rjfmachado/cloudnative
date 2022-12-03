@@ -4,7 +4,14 @@
 	"name": "Ubuntu",
 	"image": "mcr.microsoft.com/devcontainers/base:jammy",
 	"features": {
-		"ghcr.io/rjfmachado/devcontainer-features/cloud-native:1": {}
+		"ghcr.io/rjfmachado/devcontainer-features/cloud-native:1": {
+			"kubectl": "latest",
+			"helm": "latest",
+			"azwi": "latest",
+			"kubelogin": "latest",
+			"flux": "latest",
+			"cilium": "latest"
+		}
 	}
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
