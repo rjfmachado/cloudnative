@@ -11,3 +11,5 @@ https://github.com/adrianmo/aks-flux
 https://learn.microsoft.com/en-us/azure/kubernetes-fleet/overview
 https://learn.microsoft.com/en-us/azure/aks/azure-cni-overlay
 https://isovalent.com/blog/post/azure-cni-cilium/
+
+https://kubeshark.co/
