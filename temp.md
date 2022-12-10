@@ -13,3 +13,6 @@ https://learn.microsoft.com/en-us/azure/aks/azure-cni-overlay
 https://isovalent.com/blog/post/azure-cni-cilium/
 
 https://kubeshark.co/
+
+https://blog.identitydigest.com/azuread-federate-spiffe/
+https://blog.identitydigest.com/azuread-federate-k8s/
