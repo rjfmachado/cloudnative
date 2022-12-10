@@ -4,6 +4,11 @@
 	"name": "Ubuntu",
 	"image": "mcr.microsoft.com/devcontainers/base:jammy",
 	"features": {
+		"ghcr.io/devcontainers/features/azure-cli:1": {
+			"extensions": "ssh, aks-preview",
+			"installBicep": true
+		},
+		"ghcr.io/devcontainers/features/sshd:1": {},
 		"ghcr.io/rjfmachado/devcontainer-features/cloud-native:1": {
 			"kubectl": "latest",
 			"helm": "latest",
@@ -13,14 +18,15 @@
 			"cilium": "latest"
 		}
 	}
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "uname -a",
-	// Configure tool-specific properties.
-	// "customizations": {},
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
 }
+// Features to add to the dev container. More info: https://containers.dev/features.
+// "features": {},
+// Use 'forwardPorts' to make a list of ports inside the container available locally.
+// "forwardPorts": [],
+// Use 'postCreateCommand' to run commands after the container is created.
+// "postCreateCommand": "uname -a",
+// Configure tool-specific properties.
+// "customizations": {},
+// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+// "remoteUser": "root"
+//}
