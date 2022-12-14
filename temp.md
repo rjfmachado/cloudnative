@@ -16,3 +16,5 @@ https://kubeshark.co/
 
 https://blog.identitydigest.com/azuread-federate-spiffe/
 https://blog.identitydigest.com/azuread-federate-k8s/
+
+https://learn.microsoft.com/en-us/azure/virtual-network/kubernetes-network-policies
