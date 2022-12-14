@@ -10,14 +10,14 @@ param deployNetwork bool = true
 param virtualNetworkName string = 'network'
 param virtualNetworkDNSServers array = []
 
-param deployKeyvault bool = true
+param deployKeyvault bool = false
 param keyvaultName string = 'ricardmakvakskms1'
 param principalId string
 
 param deployCluster bool = true
 param clusterName string = 'cloudnative'
 param aksAdminGroupId string = '7fea8567-e0aa-40dd-bcd6-cbb6d556b4d3'
-param kubernetesVersion string = '1.24'
+param kubernetesVersion string = '1.25'
 param kubernetesVersionSystemPool string = kubernetesVersion
 param kubernetesVersionMonitoringPool string = kubernetesVersion
 param kubernetesVersionAppsPool string = kubernetesVersion
@@ -71,17 +71,21 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = if (dep
         }
       }
       {
+        name: 'aks-system-pods'
+        properties: {
+          addressPrefix: '10.0.3.0/24'
+        }
+      }
+      {
+        name: 'aks-monitoring-pods'
+        properties: {
+          addressPrefix: '10.0.4.0/24'
+        }
+      }
+      {
         name: 'aks-pods'
         properties: {
-          addressPrefix: '10.0.16.0/22'
-          delegations: [
-            {
-              name: 'Microsoft.ContainerService/managedClusters'
-              properties: {
-                serviceName: 'Microsoft.ContainerService/managedClusters'
-              }
-            }
-          ]
+          addressPrefix: '10.0.5.0/24'
         }
       }
       {
@@ -103,6 +107,14 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = if (dep
 
   resource subnetAksApp1Nodepool 'subnets' existing = {
     name: 'aks-app1-nodepool'
+  }
+
+  resource subnetAksSystemPods 'subnets' existing = {
+    name: 'aks-system-pods'
+  }
+
+  resource subnetAksMonitoringPods 'subnets' existing = {
+    name: 'aks-monitoring-pods'
   }
 
   resource subnetAksPods 'subnets' existing = {
@@ -201,7 +213,7 @@ resource aksclusterIsNetworkContributor 'Microsoft.Authorization/roleAssignments
   }
 }
 
-resource aksclusterIsKeyCryptoUser 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+resource aksclusterIsKeyCryptoUser 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (deployKeyvault) {
   name: guid(resourceGroup().id, subscription().id, 'Key Vault Crypto User')
   scope: keyAksCluster1kms
   properties: {
@@ -211,7 +223,7 @@ resource aksclusterIsKeyCryptoUser 'Microsoft.Authorization/roleAssignments@2020
   }
 }
 
-resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-preview' = if (deployCluster) {
+resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-preview' = if (deployCluster) {
   name: clusterName
   location: location
   tags: tags
@@ -239,7 +251,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
     oidcIssuerProfile: {
       enabled: true
     }
-    securityProfile: {
+    securityProfile: deployKeyvault ? {
       azureKeyVaultKms: {
         //keyVaultResourceId: null
         keyId: keyAksCluster1kms.properties.keyUriWithVersion
@@ -247,13 +259,15 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         keyVaultNetworkAccess: 'Public'
         enabled: false
       }
-    }
+    } : {}
     kubernetesVersion: kubernetesVersion
     networkProfile: {
-      networkMode: 'transparent'
+      networkPolicy: 'azure'
+      //networkPluginMode: 'Overlay'
       networkPlugin: 'azure'
-      serviceCidr: '10.1.0.0/16'
-      dnsServiceIP: '10.1.0.10'
+      serviceCidr: '10.253.0.0/16'
+      dnsServiceIP: '10.253.0.10'
+      //podCidr: '10.254.0.0/16'
     }
     autoUpgradeProfile: {
       upgradeChannel: 'stable'
@@ -275,7 +289,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         minCount: 1
         osSKU: 'CBLMariner'
         vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
-        podSubnetID: virtualNetwork::subnetAksPods.id
+        podSubnetID: virtualNetwork::subnetAksSystemPods.id
         availabilityZones: [
           '1'
           '2'
@@ -302,7 +316,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-06-02-p
         minCount: 1
         osSKU: 'CBLMariner'
         vnetSubnetID: virtualNetwork::subnetAksMonitorNodepool.id
-        podSubnetID: virtualNetwork::subnetAksPods.id
+        podSubnetID: virtualNetwork::subnetAksMonitoringPods.id
         availabilityZones: [
           '1'
           '2'
@@ -376,5 +390,5 @@ resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2020-07-01-prev
 
 output fluxReleaseNamespace string = fluxGitOpsAddon ? fluxAddon.properties.scope.cluster.releaseNamespace : ''
 
-output kmsKeyUriVersion string = keyAksCluster1kms.properties.keyUriWithVersion
-output aksoOidcIssuerURL string = managedCluster.properties.oidcIssuerProfile.issuerURL
+output kmsKeyUriVersion string = deployKeyvault ? keyAksCluster1kms.properties.keyUriWithVersion : ''
+output aksoOidcIssuerURL string = deployKeyvault ? managedCluster.properties.oidcIssuerProfile.issuerURL : ''
