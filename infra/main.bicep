@@ -394,7 +394,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
   }
 }
 
-param fluxGitOpsAddon bool = false
+param fluxGitOpsAddon bool = true
 
 resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2022-11-01' = if (fluxGitOpsAddon) {
   name: 'fluxAddon'
