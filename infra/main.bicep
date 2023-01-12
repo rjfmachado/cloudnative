@@ -435,9 +435,7 @@ resource fluxconfiguration 'Microsoft.KubernetesConfiguration/fluxConfigurations
       ingress: {
         path: './gitops/ingress'
         dependsOn: [
-          {
-            kustomizationName: 'infra'
-          }
+          'infra'
         ]
         prune: true
       }
