@@ -394,9 +394,9 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
   }
 }
 
-param fluxGitOpsAddon bool = true
+param fluxGitOpsAddon bool = false
 
-resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2020-07-01-preview' = if (fluxGitOpsAddon) {
+resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2022-11-01' = if (fluxGitOpsAddon) {
   name: 'fluxAddon'
   scope: managedCluster
   properties: {
@@ -412,7 +412,7 @@ resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2020-07-01-prev
 }
 
 resource fluxconfiguration 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-11-01' = if (fluxGitOpsAddon) {
-  name: 'fluxConfiguration'
+  name: 'cluster-configuration'
   scope: managedCluster
   dependsOn: [
     fluxAddon
@@ -429,7 +429,7 @@ resource fluxconfiguration 'Microsoft.KubernetesConfiguration/fluxConfigurations
     }
     kustomizations: {
       infra: {
-        path: './gitops'
+        path: './gitops/cluster'
         prune: true
       }
     }
