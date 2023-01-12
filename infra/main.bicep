@@ -370,10 +370,10 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
   }
 }
 
-param fluxGitOpsAddon bool = true
+param fluxGitOpsAddon bool = false
 
 resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2020-07-01-preview' = if (fluxGitOpsAddon) {
-  name: 'flux'
+  name: 'fluxAddon'
   scope: managedCluster
   properties: {
     extensionType: 'microsoft.flux'
@@ -384,7 +384,31 @@ resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2020-07-01-prev
         releaseNamespace: 'flux-system'
       }
     }
-    configurationProtectedSettings: {}
+  }
+}
+
+resource fluxconfiguration 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-11-01' = if (fluxGitOpsAddon) {
+  name: 'fluxConfiguration'
+  scope: managedCluster
+  dependsOn: [
+    fluxAddon
+  ]
+  properties: {
+    scope: 'cluster'
+    sourceKind: 'GitRepository'
+    suspend: false
+    gitRepository: {
+      url: 'https://github.com/rjfmachado/cloudnative'
+      repositoryRef: {
+        branch: 'main'
+      }
+    }
+    kustomizations: {
+      infra: {
+        path: './gitops'
+        prune: true
+      }
+    }
   }
 }
 
