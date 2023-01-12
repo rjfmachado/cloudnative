@@ -432,6 +432,15 @@ resource fluxconfiguration 'Microsoft.KubernetesConfiguration/fluxConfigurations
         path: './gitops/cluster'
         prune: true
       }
+      ingress: {
+        path: './gitops/ingress'
+        dependsOn: [
+          {
+            kustomizationName: 'infra'
+          }
+        ]
+        prune: true
+      }
     }
   }
 }
