@@ -74,18 +74,42 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = if (dep
         name: 'aks-system-pods'
         properties: {
           addressPrefix: '10.0.3.0/24'
+          delegations: [
+            {
+              name: 'Microsoft.ContainerService/managedClusters'
+              properties: {
+                serviceName: 'Microsoft.ContainerService/managedClusters'
+              }
+            }
+          ]
         }
       }
       {
         name: 'aks-monitoring-pods'
         properties: {
           addressPrefix: '10.0.4.0/24'
+          delegations: [
+            {
+              name: 'Microsoft.ContainerService/managedClusters'
+              properties: {
+                serviceName: 'Microsoft.ContainerService/managedClusters'
+              }
+            }
+          ]
         }
       }
       {
         name: 'aks-pods'
         properties: {
           addressPrefix: '10.0.5.0/24'
+          delegations: [
+            {
+              name: 'Microsoft.ContainerService/managedClusters'
+              properties: {
+                serviceName: 'Microsoft.ContainerService/managedClusters'
+              }
+            }
+          ]
         }
       }
       {
@@ -370,7 +394,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
   }
 }
 
-param fluxGitOpsAddon bool = false
+param fluxGitOpsAddon bool = true
 
 resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2020-07-01-preview' = if (fluxGitOpsAddon) {
   name: 'fluxAddon'
