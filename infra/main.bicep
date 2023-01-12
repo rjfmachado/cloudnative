@@ -411,7 +411,7 @@ resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2022-11-01' = i
   }
 }
 
-resource fluxconfiguration 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-11-01' = if (fluxGitOpsAddon) {
+resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-11-01' = if (fluxGitOpsAddon) {
   name: 'cluster-configuration'
   scope: managedCluster
   dependsOn: [
@@ -432,11 +432,29 @@ resource fluxconfiguration 'Microsoft.KubernetesConfiguration/fluxConfigurations
         path: './gitops/cluster'
         prune: true
       }
+    }
+  }
+}
+
+resource fluxingress 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-11-01' = if (fluxGitOpsAddon) {
+  name: 'ingress-configuration'
+  scope: managedCluster
+  dependsOn: [
+    fluxAddon
+  ]
+  properties: {
+    scope: 'namespace'
+    sourceKind: 'GitRepository'
+    suspend: false
+    gitRepository: {
+      url: 'https://github.com/rjfmachado/cloudnative'
+      repositoryRef: {
+        branch: 'main'
+      }
+    }
+    kustomizations: {
       ingress: {
         path: './gitops/ingress'
-        dependsOn: [
-          'infra'
-        ]
         prune: true
       }
     }
