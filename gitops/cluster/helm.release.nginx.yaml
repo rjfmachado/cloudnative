@@ -2,7 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: ingress-nginx
-  namespace: ingress
+  namespace: flux-system
 spec:
   interval: 5m
   chart:
@@ -11,9 +11,9 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: ingress-nginx
-        namespace: ingress
+        namespace: flux-system
       interval: 1m
-  targetNamespace: ingress
+  targetNamespace: ingress-system
   values:
     controller.service.annotations.service.beta.kubernetes.io/azure-load-balancer-internal: "true"
     controller.service.annotations.service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"

@@ -420,7 +420,7 @@ resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-
   properties: {
     scope: 'cluster'
     sourceKind: 'GitRepository'
-    suspend: true
+    suspend: false
     gitRepository: {
       url: 'https://github.com/rjfmachado/cloudnative'
       repositoryRef: {
@@ -436,31 +436,31 @@ resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-
   }
 }
 
-resource fluxingress 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-11-01' = if (fluxGitOpsAddon) {
-  name: 'ingress-configuration'
-  scope: managedCluster
-  dependsOn: [
-    fluxAddon
-  ]
-  properties: {
-    scope: 'namespace'
-    namespace: 'ingress'
-    sourceKind: 'GitRepository'
-    suspend: true
-    gitRepository: {
-      url: 'https://github.com/rjfmachado/cloudnative'
-      repositoryRef: {
-        branch: 'main'
-      }
-    }
-    kustomizations: {
-      ingress: {
-        path: './gitops/ingress'
-        prune: true
-      }
-    }
-  }
-}
+// resource fluxingress 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-11-01' = if (fluxGitOpsAddon) {
+//   name: 'ingress-configuration'
+//   scope: managedCluster
+//   dependsOn: [
+//     fluxAddon
+//   ]
+//   properties: {
+//     scope: 'namespace'
+//     namespace: 'ingress'
+//     sourceKind: 'GitRepository'
+//     suspend: false
+//     gitRepository: {
+//       url: 'https://github.com/rjfmachado/cloudnative'
+//       repositoryRef: {
+//         branch: 'main'
+//       }
+//     }
+//     kustomizations: {
+//       ingress: {
+//         path: './gitops/ingress'
+//         prune: true
+//       }
+//     }
+//   }
+// }
 
 output fluxReleaseNamespace string = fluxGitOpsAddon ? fluxAddon.properties.scope.cluster.releaseNamespace : ''
 
