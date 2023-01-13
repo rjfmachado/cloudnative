@@ -444,6 +444,7 @@ resource fluxingress 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-
   ]
   properties: {
     scope: 'namespace'
+    namespace: 'ingress'
     sourceKind: 'GitRepository'
     suspend: true
     gitRepository: {
