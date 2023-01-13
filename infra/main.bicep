@@ -420,6 +420,7 @@ resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-
   properties: {
     scope: 'cluster'
     sourceKind: 'GitRepository'
+    namespace: 'flux-system'
     suspend: false
     gitRepository: {
       url: 'https://github.com/rjfmachado/cloudnative'
