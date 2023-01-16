@@ -17,4 +17,4 @@ spec:
   values:
     service.annotations.service.beta.kubernetes.io/azure-load-balancer-internal: "true"
     service.annotations.service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
-    replicaCount: 2
+    controller.replicaCount: 2
