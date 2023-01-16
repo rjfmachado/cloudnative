@@ -15,6 +15,6 @@ spec:
       interval: 1m
   targetNamespace: ingress-system
   values:
-    controller.service.annotations.service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-    controller.service.annotations.service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
-    controller.replicaCount: 2
+    service.annotations.service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    service.annotations.service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
+    replicaCount: 2
