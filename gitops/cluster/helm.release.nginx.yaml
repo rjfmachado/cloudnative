@@ -12,7 +12,7 @@ spec:
         kind: HelmRepository
         name: ingress-nginx
         namespace: flux-system
-      interval: 1m
+      interval: 5m
   targetNamespace: ingress-system
   valuesFrom:
     - kind: ConfigMap
