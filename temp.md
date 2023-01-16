@@ -7,6 +7,10 @@ https://fluxcd.io/flux/guides/repository-structure/
 https://fluxcd.io/flux/guides/helmreleases/
 
 
+
+https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx
+integrate prometheus, external-dns, cert-manager
+
 https://learn.microsoft.com/en-us/azure/kubernetes-fleet/overview
 https://learn.microsoft.com/en-us/azure/aks/azure-cni-overlay
 https://isovalent.com/blog/post/azure-cni-cilium/
