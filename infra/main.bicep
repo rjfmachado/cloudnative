@@ -432,6 +432,7 @@ resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-
       infra: {
         path: './gitops/cluster'
         prune: true
+        syncIntervalInSeconds: 120
       }
     }
   }
