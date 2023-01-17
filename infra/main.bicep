@@ -283,6 +283,9 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
         keyVaultNetworkAccess: 'Public'
         enabled: false
       }
+      workloadIdentity: {
+        enabled: true
+      }
     } : {}
     kubernetesVersion: kubernetesVersion
     networkProfile: {
@@ -298,6 +301,17 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
     }
     apiServerAccessProfile: {
       disableRunCommand: true
+    }
+    storageProfile: {
+      blobCSIDriver: {
+        enabled: false
+      }
+      diskCSIDriver: {
+        enabled: true
+      }
+      fileCSIDriver: {
+        enabled: false
+      }
     }
     agentPoolProfiles: [
       {
