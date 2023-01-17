@@ -481,4 +481,4 @@ resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-
 output fluxReleaseNamespace string = fluxGitOpsAddon ? fluxAddon.properties.scope.cluster.releaseNamespace : ''
 
 output kmsKeyUriVersion string = deployKeyvault ? keyAksCluster1kms.properties.keyUriWithVersion : ''
-output aksoOidcIssuerURL string = deployKeyvault ? managedCluster.properties.oidcIssuerProfile.issuerURL : ''
+output aksoOidcIssuerURL string = managedCluster.properties.oidcIssuerProfile.issuerURL
