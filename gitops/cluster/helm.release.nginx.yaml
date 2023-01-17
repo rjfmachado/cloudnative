@@ -13,11 +13,11 @@ spec:
         name: ingress-nginx
         namespace: flux-system
       interval: 5m
-      values:
-        controller:
-          service:
-            annotations:
-              service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-              service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
-          replicaCount: 2
   targetNamespace: ingress-system
+  values:
+    controller:
+      service:
+        annotations:
+          service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+          service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
+      replicaCount: 2
