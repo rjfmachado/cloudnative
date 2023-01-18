@@ -23,6 +23,10 @@ param kubernetesVersionMonitoringPool string = kubernetesVersion
 param kubernetesVersionAppsPool string = kubernetesVersion
 param aksDnsPrefix string = 'ricardmacloudnative'
 
+param workspaceName string = 'azuremonitor'
+
+param omsagent bool = true
+
 resource roleKeyVaultCryptoOfficer 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployKeyvault) {
   scope: subscription()
   name: '14b46e9e-c2b7-41b4-b07b-48a6ebf60603'
@@ -247,6 +251,16 @@ resource aksclusterIsKeyCryptoUser 'Microsoft.Authorization/roleAssignments@2020
   }
 }
 
+resource monitorresourcegroup 'Microsoft.Resources/resourceGroups@2022-09-01' existing = {
+  name: 'monitoring'
+  scope: subscription('7efaa91f-4e11-4abd-86dc-bc40075afeec')
+}
+
+resource monitorworkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
+  name: workspaceName
+  scope: monitorresourcegroup
+}
+
 resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-preview' = if (deployCluster) {
   name: clusterName
   location: location
@@ -275,18 +289,18 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
     oidcIssuerProfile: {
       enabled: true
     }
-    securityProfile: deployKeyvault ? {
-      azureKeyVaultKms: {
+    securityProfile: {
+      azureKeyVaultKms: deployKeyvault ? {
         //keyVaultResourceId: null
         keyId: keyAksCluster1kms.properties.keyUriWithVersion
         //keyId: 'https://ricardmakvakskms.vault.azure.net/keys/cluster1kms/ebfef3a74d704c66b3b29e084dcfda73'
         keyVaultNetworkAccess: 'Public'
         enabled: false
-      }
+      } : {}
       workloadIdentity: {
         enabled: true
       }
-    } : {}
+    }
     kubernetesVersion: kubernetesVersion
     networkProfile: {
       networkPolicy: 'azure'
@@ -313,6 +327,13 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
         enabled: false
       }
     }
+    addonProfiles: {
+      omsagent: {
+        enabled: omsagent
+        config: {
+          logAnalyticsWorkspaceResourceID: omsagent ? monitorworkspace.id : json('null')
+        }
+      } }
     agentPoolProfiles: [
       {
         name: 'system'
@@ -477,6 +498,18 @@ resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-
 //     }
 //   }
 // }
+
+//This role assignment enables AKS->LA Fast Alerting experience
+var MonitoringMetricsPublisherRole = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '3913510d-42f4-4e42-8a64-420c390055eb')
+resource FastAlertingRole_Aks_Law 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (omsagent) {
+  scope: managedCluster
+  name: guid(managedCluster.id, 'omsagent', MonitoringMetricsPublisherRole)
+  properties: {
+    roleDefinitionId: MonitoringMetricsPublisherRole
+    principalId: managedCluster.properties.addonProfiles.omsagent.identity.objectId
+    principalType: 'ServicePrincipal'
+  }
+}
 
 output fluxReleaseNamespace string = fluxGitOpsAddon ? fluxAddon.properties.scope.cluster.releaseNamespace : ''
 
