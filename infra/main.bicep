@@ -300,6 +300,12 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
       workloadIdentity: {
         enabled: true
       }
+      defender: {
+        logAnalyticsWorkspaceResourceId: monitorworkspace.id
+        securityMonitoring: {
+          enabled: true
+        }
+      }
     }
     kubernetesVersion: kubernetesVersion
     networkProfile: {
@@ -331,7 +337,8 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
       omsagent: {
         enabled: omsagent
         config: {
-          logAnalyticsWorkspaceResourceID: omsagent ? monitorworkspace.id : json('null')
+          logAnalyticsWorkspaceResourceID: monitorworkspace.id
+
         }
       } }
     agentPoolProfiles: [
@@ -340,12 +347,12 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
         mode: 'System'
         type: 'VirtualMachineScaleSets'
         orchestratorVersion: kubernetesVersionSystemPool
-        count: 1
+        count: 2
         vmSize: 'Standard_B2s'
         osType: 'Linux'
         enableAutoScaling: true
-        maxCount: 3
-        minCount: 1
+        maxCount: 4
+        minCount: 2
         osSKU: 'CBLMariner'
         vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
         podSubnetID: virtualNetwork::subnetAksSystemPods.id
@@ -367,7 +374,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
         mode: 'User'
         type: 'VirtualMachineScaleSets'
         orchestratorVersion: kubernetesVersionMonitoringPool
-        count: 1
+        count: 2
         vmSize: 'Standard_B2s'
         osType: 'Linux'
         enableAutoScaling: true
@@ -394,7 +401,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
         mode: 'User'
         type: 'VirtualMachineScaleSets'
         orchestratorVersion: kubernetesVersionAppsPool
-        count: 1
+        count: 2
         vmSize: 'Standard_B2s'
         osType: 'Linux'
         enableAutoScaling: true
