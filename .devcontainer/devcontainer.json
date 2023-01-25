@@ -39,7 +39,8 @@
 		"ms-vscode.azure-account",
 		"ms-azuretools.vscode-azureresourcegroups",
 		"heaths.vscode-guid",
-		"donjayamanne.githistory"
+		"donjayamanne.githistory",
+		"mhutchie.git-graph"
 	]
 }
 // Features to add to the dev container. More info: https://containers.dev/features.
