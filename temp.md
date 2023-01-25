@@ -1,5 +1,7 @@
 https://techcommunity.microsoft.com/t5/azure-global/gitops-and-secret-management-with-aks-flux-cd-sops-and-azure-key/ba-p/2280068
 
+https://github.com/fabianlee/kustomize-overlays-with-reload
+
 https://learn.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-logging-v2
 
 https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx
