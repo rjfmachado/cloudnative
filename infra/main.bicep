@@ -26,13 +26,21 @@ param aksDnsPrefix string = 'ricardmacloudnative'
 param workspaceName string = 'azuremonitor'
 
 param omsagent bool = true
+param containerLogsV2BasicLogs bool = false
 
 @description('Diagnostic categories to log')
 param AksDiagCategories array = [
-  'cluster-autoscaler'
-  'kube-controller-manager'
+  'kube-apiserver'
+  'kube-audit'
   'kube-audit-admin'
+  'kube-controller-manager'
+  'kube-scheduler'
+  'cluster-autoscaler'
+  'cloud-controller-manager'
   'guard'
+  'csi-azuredisk-controller'
+  'csi-azurefile-controller'
+  'csi-snapshot-controller'
 ]
 
 resource roleKeyVaultCryptoOfficer 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployKeyvault) {
@@ -542,6 +550,16 @@ resource AksDiags 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = i
       }
     ]
   }
+}
+
+resource containerLogsV2_Basiclogs 'Microsoft.OperationalInsights/workspaces/tables@2022-10-01' = if (containerLogsV2BasicLogs) {
+  name: '${monitorworkspace}/ContainerLogV2'
+  properties: {
+    plan: 'Basic'
+  }
+  dependsOn: [
+    managedCluster
+  ]
 }
 
 output fluxReleaseNamespace string = fluxGitOpsAddon ? fluxAddon.properties.scope.cluster.releaseNamespace : ''
