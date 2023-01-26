@@ -3,6 +3,7 @@ https://techcommunity.microsoft.com/t5/azure-global/gitops-and-secret-management
 https://github.com/fabianlee/kustomize-overlays-with-reload
 
 https://learn.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-logging-v2
+https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-retention-archive?tabs=api-1%2Cportal-2
 
 https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx
 integrate prometheus, external-dns, cert-manager

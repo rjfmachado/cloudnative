@@ -27,6 +27,14 @@ param workspaceName string = 'azuremonitor'
 
 param omsagent bool = true
 
+@description('Diagnostic categories to log')
+param AksDiagCategories array = [
+  'cluster-autoscaler'
+  'kube-controller-manager'
+  'kube-audit-admin'
+  'guard'
+]
+
 resource roleKeyVaultCryptoOfficer 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployKeyvault) {
   scope: subscription()
   name: '14b46e9e-c2b7-41b4-b07b-48a6ebf60603'
@@ -515,6 +523,24 @@ resource FastAlertingRole_Aks_Law 'Microsoft.Authorization/roleAssignments@2022-
     roleDefinitionId: MonitoringMetricsPublisherRole
     principalId: managedCluster.properties.addonProfiles.omsagent.identity.objectId
     principalType: 'ServicePrincipal'
+  }
+}
+
+resource AksDiags 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (omsagent) {
+  name: 'aksDiags'
+  scope: managedCluster
+  properties: {
+    workspaceId: monitorworkspace.id
+    logs: [for aksDiagCategory in AksDiagCategories: {
+      category: aksDiagCategory
+      enabled: true
+    }]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+      }
+    ]
   }
 }
 
