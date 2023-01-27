@@ -23,8 +23,7 @@
 		},
 		"ghcr.io/dhoeric/features/opa:1": {
 			"version": "latest"
-		},
-		"ghcr.io/devcontainers-contrib/features/grpcurl-asdf:2": {}
+		}
 	},
 	"extensions": [
 		"cschleiden.vscode-github-actions",
