@@ -19,7 +19,7 @@
 		},
 		"ghcr.io/dhoeric/features/stern:1": {},
 		"ghcr.io/dhoeric/features/k9s:1": {
-			"version": "latest"
+			"version": "0.26.7"
 		},
 		"ghcr.io/dhoeric/features/opa:1": {
 			"version": "latest"
