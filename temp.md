@@ -25,3 +25,8 @@ https://learn.microsoft.com/en-us/azure/virtual-network/kubernetes-network-polic
 https://fluxcd.io/flagger/
 
 https://www.k8gb.io/
+https://github.com/feiskyer/kubernetes-handbook/blob/master/examples/nginx-ha/README.md
+https://kubernetes.io/blog/2022/12/30/advancements-in-kubernetes-traffic-engineering/
+https://github.com/kubernetes/kubernetes/issues/85643
+https://blog.sebastian-daschner.com/entries/zero-downtime-updates-kubernetes?utm_source=devopslinks.com&utm_medium=devopslinks.com&utm_campaign=devopslinks.com
+https://learnk8s.io/graceful-shutdown
