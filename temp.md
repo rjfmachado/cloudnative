@@ -30,3 +30,5 @@ https://kubernetes.io/blog/2022/12/30/advancements-in-kubernetes-traffic-enginee
 https://github.com/kubernetes/kubernetes/issues/85643
 https://blog.sebastian-daschner.com/entries/zero-downtime-updates-kubernetes?utm_source=devopslinks.com&utm_medium=devopslinks.com&utm_campaign=devopslinks.com
 https://learnk8s.io/graceful-shutdown
+
+https://github.com/nginxinc/nginx-kubernetes-gateway
