@@ -26,7 +26,6 @@ param aksDnsPrefix string = 'ricardmacloudnative'
 param workspaceName string = 'azuremonitor'
 
 param omsagent bool = true
-param containerLogsV2BasicLogs bool = false
 
 @description('Diagnostic categories to log')
 param AksDiagCategories array = [
@@ -57,6 +56,11 @@ resource roleKeyVaultSecretsOfficer 'Microsoft.Authorization/roleDefinitions@202
 //   scope: subscription()
 //   name: '4633458b-17de-408a-b874-0445c86b69e6'
 // }
+
+resource roleMonitoringMetricsPublisher 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: '3913510d-42f4-4e42-8a64-420c390055eb'
+}
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = if (deployNetwork) {
   name: virtualNetworkName
@@ -90,48 +94,48 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = if (dep
           addressPrefix: '10.0.2.0/24'
         }
       }
-      {
-        name: 'aks-system-pods'
-        properties: {
-          addressPrefix: '10.0.3.0/24'
-          delegations: [
-            {
-              name: 'Microsoft.ContainerService/managedClusters'
-              properties: {
-                serviceName: 'Microsoft.ContainerService/managedClusters'
-              }
-            }
-          ]
-        }
-      }
-      {
-        name: 'aks-monitoring-pods'
-        properties: {
-          addressPrefix: '10.0.4.0/24'
-          delegations: [
-            {
-              name: 'Microsoft.ContainerService/managedClusters'
-              properties: {
-                serviceName: 'Microsoft.ContainerService/managedClusters'
-              }
-            }
-          ]
-        }
-      }
-      {
-        name: 'aks-pods'
-        properties: {
-          addressPrefix: '10.0.5.0/24'
-          delegations: [
-            {
-              name: 'Microsoft.ContainerService/managedClusters'
-              properties: {
-                serviceName: 'Microsoft.ContainerService/managedClusters'
-              }
-            }
-          ]
-        }
-      }
+      // {
+      //   name: 'aks-system-pods'
+      //   properties: {
+      //     addressPrefix: '10.0.3.0/24'
+      //     delegations: [
+      //       {
+      //         name: 'Microsoft.ContainerService/managedClusters'
+      //         properties: {
+      //           serviceName: 'Microsoft.ContainerService/managedClusters'
+      //         }
+      //       }
+      //     ]
+      //   }
+      // }
+      // {
+      //   name: 'aks-monitoring-pods'
+      //   properties: {
+      //     addressPrefix: '10.0.4.0/24'
+      //     delegations: [
+      //       {
+      //         name: 'Microsoft.ContainerService/managedClusters'
+      //         properties: {
+      //           serviceName: 'Microsoft.ContainerService/managedClusters'
+      //         }
+      //       }
+      //     ]
+      //   }
+      // }
+      // {
+      //   name: 'aks-pods'
+      //   properties: {
+      //     addressPrefix: '10.0.5.0/24'
+      //     delegations: [
+      //       {
+      //         name: 'Microsoft.ContainerService/managedClusters'
+      //         properties: {
+      //           serviceName: 'Microsoft.ContainerService/managedClusters'
+      //         }
+      //       }
+      //     ]
+      //   }
+      // }
       {
         name: 'AzureBastionSubnet'
         properties: {
@@ -153,17 +157,17 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = if (dep
     name: 'aks-app1-nodepool'
   }
 
-  resource subnetAksSystemPods 'subnets' existing = {
-    name: 'aks-system-pods'
-  }
+  // resource subnetAksSystemPods 'subnets' existing = {
+  //   name: 'aks-system-pods'
+  // }
 
-  resource subnetAksMonitoringPods 'subnets' existing = {
-    name: 'aks-monitoring-pods'
-  }
+  // resource subnetAksMonitoringPods 'subnets' existing = {
+  //   name: 'aks-monitoring-pods'
+  // }
 
-  resource subnetAksPods 'subnets' existing = {
-    name: 'aks-pods'
-  }
+  // resource subnetAksPods 'subnets' existing = {
+  //   name: 'aks-pods'
+  // }
 
   resource subnetAzureBastion 'subnets' existing = {
     name: 'AzureBastionSubnet'
@@ -326,11 +330,11 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
     kubernetesVersion: kubernetesVersion
     networkProfile: {
       networkPolicy: 'azure'
-      //networkPluginMode: 'Overlay'
+      networkPluginMode: 'Overlay'
       networkPlugin: 'azure'
       serviceCidr: '10.253.0.0/16'
       dnsServiceIP: '10.253.0.10'
-      //podCidr: '10.254.0.0/16'
+      podCidr: '10.254.0.0/16'
     }
     autoUpgradeProfile: {
       upgradeChannel: 'stable'
@@ -371,7 +375,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
         minCount: 2
         osSKU: 'CBLMariner'
         vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
-        podSubnetID: virtualNetwork::subnetAksSystemPods.id
+        //podSubnetID: virtualNetwork::subnetAksSystemPods.id
         availabilityZones: [
           '1'
           '2'
@@ -398,7 +402,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
         minCount: 1
         osSKU: 'CBLMariner'
         vnetSubnetID: virtualNetwork::subnetAksMonitorNodepool.id
-        podSubnetID: virtualNetwork::subnetAksMonitoringPods.id
+        //podSubnetID: virtualNetwork::subnetAksMonitoringPods.id
         availabilityZones: [
           '1'
           '2'
@@ -425,7 +429,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
         minCount: 1
         osSKU: 'CBLMariner'
         vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
-        podSubnetID: virtualNetwork::subnetAksPods.id
+        //podSubnetID: virtualNetwork::subnetAksPods.id
         availabilityZones: [
           '1'
           '2'
@@ -523,12 +527,12 @@ resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-
 // }
 
 //This role assignment enables AKS->LA Fast Alerting experience
-var MonitoringMetricsPublisherRole = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '3913510d-42f4-4e42-8a64-420c390055eb')
+
 resource FastAlertingRole_Aks_Law 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (omsagent) {
   scope: managedCluster
-  name: guid(managedCluster.id, 'omsagent', MonitoringMetricsPublisherRole)
+  name: guid(managedCluster.id, 'omsagent', roleMonitoringMetricsPublisher.id)
   properties: {
-    roleDefinitionId: MonitoringMetricsPublisherRole
+    roleDefinitionId: roleMonitoringMetricsPublisher.id
     principalId: managedCluster.properties.addonProfiles.omsagent.identity.objectId
     principalType: 'ServicePrincipal'
   }
@@ -550,16 +554,6 @@ resource AksDiags 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = i
       }
     ]
   }
-}
-
-resource containerLogsV2_Basiclogs 'Microsoft.OperationalInsights/workspaces/tables@2022-10-01' = if (containerLogsV2BasicLogs) {
-  name: '${monitorworkspace}/ContainerLogV2'
-  properties: {
-    plan: 'Basic'
-  }
-  dependsOn: [
-    managedCluster
-  ]
 }
 
 output fluxReleaseNamespace string = fluxGitOpsAddon ? fluxAddon.properties.scope.cluster.releaseNamespace : ''
