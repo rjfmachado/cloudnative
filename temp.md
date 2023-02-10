@@ -13,6 +13,7 @@ integrate prometheus, external-dns, cert-manager
 https://learn.microsoft.com/en-us/azure/kubernetes-fleet/overview
 https://learn.microsoft.com/en-us/azure/aks/azure-cni-overlay
 https://isovalent.com/blog/post/azure-cni-cilium/
+https://isovalent.com/blog/post/tutorial-azure-cni-powered-by-cilium/
 
 https://kubeshark.co/
 
