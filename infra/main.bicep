@@ -281,7 +281,7 @@ resource monitorworkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' 
   scope: monitorresourcegroup
 }
 
-resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-preview' = if (deployCluster) {
+resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-11-01' = if (deployCluster) {
   name: clusterName
   location: location
   tags: tags
@@ -289,6 +289,10 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-10-02-p
     aksclusterIsKeyCryptoUser
     aksclusterIsNetworkContributor
   ]
+  sku: {
+    name: 'Basic'
+    tier: 'Free'
+  }
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
