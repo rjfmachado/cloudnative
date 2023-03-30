@@ -35,3 +35,4 @@ integrate prometheus, external-dns, cert-manager
 <https://learnk8s.io/graceful-shutdown>
 
 <https://github.com/nginxinc/nginx-kubernetes-gateway>
+<https://istio.io/latest/blog/2023/ambient-ebpf-redirection/>
