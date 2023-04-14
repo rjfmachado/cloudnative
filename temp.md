@@ -1,6 +1,8 @@
 <https://techcommunity.microsoft.com/t5/azure-global/gitops-and-secret-management-with-aks-flux-cd-sops-and-azure-key/ba-p/2280068>
 
-https://azure.github.io/azure-firewall-egress-controller/
+<https://github.com/Azure-Samples/aks-load-testing>
+
+<https://azure.github.io/azure-firewall-egress-controller/>
 
 <https://github.com/fabianlee/kustomize-overlays-with-reload>
 
