@@ -2,6 +2,8 @@
 
 <https://github.com/Azure-Samples/aks-load-testing>
 
+<https://techcommunity.microsoft.com/t5/azure-confidential-computing/aligning-with-kata-confidential-containers-to-achieve-zero-trust/ba-p/3797876>
+
 <https://azure.github.io/azure-firewall-egress-controller/>
 
 <https://github.com/fabianlee/kustomize-overlays-with-reload>
