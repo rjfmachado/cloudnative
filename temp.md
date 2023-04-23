@@ -1,5 +1,7 @@
 <https://techcommunity.microsoft.com/t5/azure-global/gitops-and-secret-management-with-aks-flux-cd-sops-and-azure-key/ba-p/2280068>
 
+https://github.com/Azure-Samples/aks-istio-addon-bicep
+
 <https://github.com/Azure-Samples/aks-load-testing>
 
 <https://techcommunity.microsoft.com/t5/azure-confidential-computing/aligning-with-kata-confidential-containers-to-achieve-zero-trust/ba-p/3797876>
