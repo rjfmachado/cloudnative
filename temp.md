@@ -2,6 +2,8 @@
 
 <https://github.com/actions/actions-runner-controller>
 
+<https://azure.microsoft.com/en-us/blog/transforming-containerized-applications-with-azure-container-storage-now-in-preview/>
+
 <https://github.com/Azure-Samples/aks-istio-addon-bicep>
 <https://medium.com/microsoftazure/testing-the-istio-based-service-mesh-add-on-for-azure-kubernetes-service-47d9be3fec0f>
 
