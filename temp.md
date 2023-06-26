@@ -2,6 +2,8 @@
 
 <https://techcommunity.microsoft.com/t5/azure-global/gitops-and-secret-management-with-aks-flux-cd-sops-and-azure-key/ba-p/2280068>
 
+<https://azure.microsoft.com/en-us/blog/transforming-containerized-applications-with-azure-container-storage-now-in-preview/>
+
 <https://learn.microsoft.com/en-us/azure/aks/api-server-vnet-integration>
 
 <https://blog.cloudtrooper.net/2023/06/16/cilium-network-policy-in-aks/>
