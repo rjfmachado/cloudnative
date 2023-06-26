@@ -4,6 +4,8 @@
 
 <https://learn.microsoft.com/en-us/azure/aks/api-server-vnet-integration>
 
+<https://blog.cloudtrooper.net/2023/06/16/cilium-network-policy-in-aks/>
+
 <https://learn.microsoft.com/en-gb/azure/azure-app-configuration/quickstart-azure-kubernetes-service>
 
 <https://github.com/actions/actions-runner-controller>
