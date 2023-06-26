@@ -1,3 +1,5 @@
+# To do
+
 <https://techcommunity.microsoft.com/t5/azure-global/gitops-and-secret-management-with-aks-flux-cd-sops-and-azure-key/ba-p/2280068>
 
 <https://learn.microsoft.com/en-us/azure/aks/api-server-vnet-integration>

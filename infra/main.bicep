@@ -281,7 +281,7 @@ resource monitorworkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' 
   scope: monitorresourcegroup
 }
 
-resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-11-01' = if (deployCluster) {
+resource managedCluster 'Microsoft.ContainerService/managedClusters@2023-04-01' = if (deployCluster) {
   name: clusterName
   location: location
   tags: tags
@@ -377,7 +377,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-11-01' 
         enableAutoScaling: true
         maxCount: 4
         minCount: 2
-        osSKU: 'CBLMariner'
+        osSKU: 'AzureLinux'
         vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
         //podSubnetID: virtualNetwork::subnetAksSystemPods.id
         availabilityZones: [
@@ -404,7 +404,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-11-01' 
         enableAutoScaling: true
         maxCount: 3
         minCount: 1
-        osSKU: 'CBLMariner'
+        osSKU: 'AzureLinux'
         vnetSubnetID: virtualNetwork::subnetAksMonitorNodepool.id
         //podSubnetID: virtualNetwork::subnetAksMonitoringPods.id
         availabilityZones: [
@@ -431,7 +431,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2022-11-01' 
         enableAutoScaling: true
         maxCount: 3
         minCount: 1
-        osSKU: 'CBLMariner'
+        osSKU: 'AzureLinux'
         vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
         //podSubnetID: virtualNetwork::subnetAksPods.id
         availabilityZones: [
