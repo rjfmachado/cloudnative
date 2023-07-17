@@ -5,24 +5,25 @@
 	"image": "mcr.microsoft.com/devcontainers/base:jammy",
 	"features": {
 		"ghcr.io/devcontainers/features/azure-cli:1": {
-			"extensions": "ssh, aks-preview, k8s-extension",
-			"installBicep": true
+			"installBicep": true,
+			"version": "latest"
 		},
-		"ghcr.io/devcontainers/features/sshd:1": {},
+		"ghcr.io/devcontainers/features/sshd:1": {
+			"version": "latest"
+		},
 		"ghcr.io/rjfmachado/devcontainer-features/cloud-native:1": {
 			"kubectl": "latest",
 			"helm": "latest",
-			"azwi": "latest",
 			"kubelogin": "latest",
+			"azwi": "latest",
 			"flux": "latest",
 			"cilium": "latest"
 		},
 		"ghcr.io/dhoeric/features/stern:1": {},
-		"ghcr.io/dhoeric/features/k9s:1": {
-			"version": "0.26.7"
-		},
-		"ghcr.io/dhoeric/features/opa:1": {
-			"version": "latest"
+		"ghcr.io/dhoeric/features/k9s:1": {},
+		"ghcr.io/dhoeric/features/opa:1": {},
+		"ghcr.io/azure/azure-dev/azd:0": {
+			"version": "stable"
 		}
 	},
 	"customizations": {
