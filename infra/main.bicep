@@ -27,6 +27,9 @@ param workspaceName string = 'azuremonitor'
 
 param omsagent bool = true
 
+param deployApplicationGatewayContainers bool = true
+param ApplicationGatewayContainersName string = 'application-gateway-containers'
+
 @description('Diagnostic categories to log')
 param AksDiagCategories array = [
   'kube-apiserver'
@@ -94,48 +97,20 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = if (dep
           addressPrefix: '10.0.2.0/24'
         }
       }
-      // {
-      //   name: 'aks-system-pods'
-      //   properties: {
-      //     addressPrefix: '10.0.3.0/24'
-      //     delegations: [
-      //       {
-      //         name: 'Microsoft.ContainerService/managedClusters'
-      //         properties: {
-      //           serviceName: 'Microsoft.ContainerService/managedClusters'
-      //         }
-      //       }
-      //     ]
-      //   }
-      // }
-      // {
-      //   name: 'aks-monitoring-pods'
-      //   properties: {
-      //     addressPrefix: '10.0.4.0/24'
-      //     delegations: [
-      //       {
-      //         name: 'Microsoft.ContainerService/managedClusters'
-      //         properties: {
-      //           serviceName: 'Microsoft.ContainerService/managedClusters'
-      //         }
-      //       }
-      //     ]
-      //   }
-      // }
-      // {
-      //   name: 'aks-pods'
-      //   properties: {
-      //     addressPrefix: '10.0.5.0/24'
-      //     delegations: [
-      //       {
-      //         name: 'Microsoft.ContainerService/managedClusters'
-      //         properties: {
-      //           serviceName: 'Microsoft.ContainerService/managedClusters'
-      //         }
-      //       }
-      //     ]
-      //   }
-      // }
+      {
+        name: 'aks-application-gateway'
+        properties: {
+          addressPrefix: '10.0.253.0/24'
+          delegations: [
+            {
+              name: 'Microsoft.ServiceNetworking/trafficControllers'
+              properties: {
+                serviceName: 'Microsoft.ServiceNetworking/trafficControllers'
+              }
+            }
+          ]
+        }
+      }
       {
         name: 'AzureBastionSubnet'
         properties: {
@@ -157,17 +132,9 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = if (dep
     name: 'aks-app1-nodepool'
   }
 
-  // resource subnetAksSystemPods 'subnets' existing = {
-  //   name: 'aks-system-pods'
-  // }
-
-  // resource subnetAksMonitoringPods 'subnets' existing = {
-  //   name: 'aks-monitoring-pods'
-  // }
-
-  // resource subnetAksPods 'subnets' existing = {
-  //   name: 'aks-pods'
-  // }
+  resource subnetApplicationGatewayContainers 'subnets' existing = {
+    name: 'aks-application-gateway'
+  }
 
   resource subnetAzureBastion 'subnets' existing = {
     name: 'AzureBastionSubnet'
@@ -214,7 +181,7 @@ resource keyAksCluster1kms 'Microsoft.KeyVault/vaults/keys@2022-07-01' = if (dep
 }
 
 //Grant me rights to create keys
-resource IamaCryptoOfficer 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (deployKeyvault) {
+resource IamaCryptoOfficer 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (deployKeyvault) {
   name: guid(resourceGroup().id, subscription().id, 'Key Vault Crypto Officer')
   scope: keyvaultAks
   properties: {
@@ -225,7 +192,7 @@ resource IamaCryptoOfficer 'Microsoft.Authorization/roleAssignments@2020-10-01-p
 }
 
 //Grant me rights to create secrets
-resource IamaSecretsOfficer 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (deployKeyvault) {
+resource IamaSecretsOfficer 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (deployKeyvault) {
   name: guid(resourceGroup().id, subscription().id, 'Key Vault Secrets Officer')
   scope: keyvaultAks
   properties: {
@@ -235,7 +202,7 @@ resource IamaSecretsOfficer 'Microsoft.Authorization/roleAssignments@2020-10-01-
   }
 }
 
-resource cluster1Identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
+resource cluster1Identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: clusterName
   location: location
   tags: tags
@@ -251,8 +218,8 @@ resource roleKeyVaultCryptoUser 'Microsoft.Authorization/roleDefinitions@2022-04
   name: '12338af0-0e69-4776-bea7-57ae8d297424'
 }
 
-resource aksclusterIsNetworkContributor 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
-  name: guid(resourceGroup().id, subscription().id, 'Network Contributor')
+resource aksclusterIsNetworkContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid('aksclusterIsNetworkContributor', resourceGroup().id, subscription().id, 'Network Contributor')
   scope: virtualNetwork
   properties: {
     principalId: cluster1Identity.properties.principalId
@@ -261,7 +228,7 @@ resource aksclusterIsNetworkContributor 'Microsoft.Authorization/roleAssignments
   }
 }
 
-resource aksclusterIsKeyCryptoUser 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (deployKeyvault) {
+resource aksclusterIsKeyCryptoUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (deployKeyvault) {
   name: guid(resourceGroup().id, subscription().id, 'Key Vault Crypto User')
   scope: keyAksCluster1kms
   properties: {
@@ -288,6 +255,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2023-06-01' 
   dependsOn: [
     aksclusterIsKeyCryptoUser
     aksclusterIsNetworkContributor
+    ApplicationGatewayContainersAssociation
   ]
   sku: {
     name: 'Base'
@@ -492,6 +460,9 @@ resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2023-
         branch: 'main'
       }
     }
+    configurationProtectedSettings: {
+      albidentityclientid: base64(ApplicationGatewayContainersIdentity.properties.clientId)
+    }
     kustomizations: {
       infra: {
         path: './gitops/cluster'
@@ -502,34 +473,7 @@ resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2023-
   }
 }
 
-// resource fluxingress 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-11-01' = if (fluxGitOpsAddon) {
-//   name: 'ingress-configuration'
-//   scope: managedCluster
-//   dependsOn: [
-//     fluxAddon
-//   ]
-//   properties: {
-//     scope: 'namespace'
-//     namespace: 'ingress'
-//     sourceKind: 'GitRepository'
-//     suspend: false
-//     gitRepository: {
-//       url: 'https://github.com/rjfmachado/cloudnative'
-//       repositoryRef: {
-//         branch: 'main'
-//       }
-//     }
-//     kustomizations: {
-//       ingress: {
-//         path: './gitops/ingress'
-//         prune: true
-//       }
-//     }
-//   }
-// }
-
 //This role assignment enables AKS->LA Fast Alerting experience
-
 resource FastAlertingRole_Aks_Law 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (omsagent) {
   scope: managedCluster
   name: guid(managedCluster.id, 'omsagent', roleMonitoringMetricsPublisher.id)
@@ -558,7 +502,64 @@ resource AksDiags 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = i
   }
 }
 
-output fluxReleaseNamespace string = fluxGitOpsAddon ? fluxAddon.properties.scope.cluster.releaseNamespace : ''
+resource roleAppGwforContainersConfigurationManager 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (deployApplicationGatewayContainers) {
+  scope: subscription()
+  name: 'fbc52c3f-28ad-4303-a892-8a056630b8f1'
+}
 
-output kmsKeyUriVersion string = deployKeyvault ? keyAksCluster1kms.properties.keyUriWithVersion : ''
-output aksoOidcIssuerURL string = managedCluster.properties.oidcIssuerProfile.issuerURL
+resource ApplicationGatewayContainersIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: ApplicationGatewayContainersName
+  location: location
+  tags: tags
+}
+resource ApplicationGatewayContainersIdentityFederatedCredential 'Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials@2023-01-31' = if (deployApplicationGatewayContainers) {
+  name: 'azure-alb-identity'
+  parent: ApplicationGatewayContainersIdentity
+  properties: {
+    audiences: [ 'api://AzureADTokenExchange' ]
+    issuer: managedCluster.properties.oidcIssuerProfile.issuerURL
+    subject: 'system:serviceaccount:azure-alb-system:alb-controller-sa'
+  }
+}
+
+resource ApplicationGatewayContainersIsNetworkContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid('ApplicationGatewayContainersIsNetworkContributor', resourceGroup().id, subscription().id, 'Network Contributor')
+  scope: virtualNetwork::subnetApplicationGatewayContainers
+  properties: {
+    principalId: ApplicationGatewayContainersIdentity.properties.principalId
+    roleDefinitionId: roleNetworkContributor.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource ApplicationGatewayContainersIsConfigurationManager 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid('ApplicationGatewayContainersIsConfigurationManager', resourceGroup().id, subscription().id, 'AppGw for Containers Configuration Manager')
+  scope: resourceGroup()
+  properties: {
+    principalId: ApplicationGatewayContainersIdentity.properties.principalId
+    roleDefinitionId: roleAppGwforContainersConfigurationManager.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource ApplicationGatewayContainers 'Microsoft.ServiceNetworking/trafficControllers@2023-05-01-preview' = if (deployApplicationGatewayContainers) {
+  name: ApplicationGatewayContainersName
+  location: location
+  properties: {}
+}
+
+resource ApplicationGatewayContainersAssociation 'Microsoft.ServiceNetworking/trafficControllers/associations@2023-05-01-preview' = {
+  name: guid('ApplicationGatewayContainersAssociation', resourceGroup().id, subscription().id, 'ApplicationGatewayContainersAssociation')
+  location: location
+  parent: ApplicationGatewayContainers
+  properties: {
+    associationType: 'subnets'
+    subnet: {
+      id: virtualNetwork::subnetApplicationGatewayContainers.id
+    }
+  }
+}
+
+output fluxReleaseNamespace string = fluxGitOpsAddon ? fluxAddon.properties.scope.cluster.releaseNamespace : ''
+//output kmsKeyUriVersion string = deployKeyvault ? keyAksCluster1kms.properties.keyUriWithVersion : ''
+//output aksoOidcIssuerURL string = managedCluster.properties.oidcIssuerProfile.issuerURL
