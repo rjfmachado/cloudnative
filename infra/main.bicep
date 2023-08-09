@@ -10,14 +10,14 @@ param deployNetwork bool = true
 param virtualNetworkName string = 'network'
 param virtualNetworkDNSServers array = []
 
-param deployKeyvault bool = false
+param deployKeyvault bool = true
 param keyvaultName string = 'ricardmakvakskms1'
 param principalId string
 
 param deployCluster bool = true
 param clusterName string = 'cloudnative'
 param aksAdminGroupId string = '7fea8567-e0aa-40dd-bcd6-cbb6d556b4d3'
-param kubernetesVersion string = '1.25'
+param kubernetesVersion string = '1.27'
 param kubernetesVersionSystemPool string = kubernetesVersion
 param kubernetesVersionMonitoringPool string = kubernetesVersion
 param kubernetesVersionAppsPool string = kubernetesVersion
@@ -281,7 +281,7 @@ resource monitorworkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' 
   scope: monitorresourcegroup
 }
 
-resource managedCluster 'Microsoft.ContainerService/managedClusters@2023-04-01' = if (deployCluster) {
+resource managedCluster 'Microsoft.ContainerService/managedClusters@2023-06-01' = if (deployCluster) {
   name: clusterName
   location: location
   tags: tags
@@ -290,7 +290,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2023-04-01' 
     aksclusterIsNetworkContributor
   ]
   sku: {
-    name: 'Basic'
+    name: 'Base'
     tier: 'Free'
   }
   identity: {
@@ -300,6 +300,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2023-04-01' 
     }
   }
   properties: {
+    kubernetesVersion: kubernetesVersion
     dnsPrefix: aksDnsPrefix
     disableLocalAccounts: true
     enableRBAC: true
@@ -315,11 +316,9 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2023-04-01' 
     }
     securityProfile: {
       azureKeyVaultKms: deployKeyvault ? {
-        //keyVaultResourceId: null
         keyId: keyAksCluster1kms.properties.keyUriWithVersion
-        //keyId: 'https://ricardmakvakskms.vault.azure.net/keys/cluster1kms/ebfef3a74d704c66b3b29e084dcfda73'
         keyVaultNetworkAccess: 'Public'
-        enabled: false
+        enabled: true
       } : {}
       workloadIdentity: {
         enabled: true
@@ -331,7 +330,6 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2023-04-01' 
         }
       }
     }
-    kubernetesVersion: kubernetesVersion
     networkProfile: {
       networkPolicy: 'azure'
       networkPluginMode: 'Overlay'
@@ -462,7 +460,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2023-04-01' 
 
 param fluxGitOpsAddon bool = true
 
-resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2022-11-01' = if (fluxGitOpsAddon) {
+resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2023-05-01' = if (fluxGitOpsAddon) {
   name: 'fluxAddon'
   scope: managedCluster
   properties: {
@@ -477,7 +475,7 @@ resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2022-11-01' = i
   }
 }
 
-resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2022-11-01' = if (fluxGitOpsAddon) {
+resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2023-05-01' = if (fluxGitOpsAddon) {
   name: 'cluster-configuration'
   scope: managedCluster
   dependsOn: [
