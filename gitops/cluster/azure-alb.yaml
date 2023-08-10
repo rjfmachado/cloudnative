@@ -8,10 +8,12 @@ spec:
   chart:
     spec:
       chart: oci://mcr.microsoft.com/application-lb/charts/alb-controller
-
       interval: 5m
   targetNamespace: azure-alb-system
-  # valuesFrom:
-  #   albController:
-  #     podIdentity:
-  #       clientID:
+  values:
+    albController:
+      podIdentity:
+        clientID:
+          secretRef:
+            name: cluster-configuration-protected-parameters
+            key: albidentityclientid
