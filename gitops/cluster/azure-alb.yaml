@@ -9,12 +9,12 @@ spec:
     spec:
       chart: alb-controller
       sourceRef:
-        kind: oci://mcr.microsoft.com/application-lb/charts/alb-controller
-        name: alb-controller
+        kind: HelmRepository
+        name: azure-alb
         namespace: flux-system
       interval: 5m
   targetNamespace: azure-alb-system
-  values:
-    albController:
-      podIdentity:
-        clientID: ""
+  # values:
+  #   albController:
+  #     podIdentity:
+  #       clientID: ""
