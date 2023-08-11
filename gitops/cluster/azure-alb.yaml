@@ -7,7 +7,11 @@ spec:
   interval: 5m
   chart:
     spec:
-      chart: oci://mcr.microsoft.com/application-lb/charts/alb-controller
+      chart: alb-controller
+      sourceRef:
+        kind: OCIRepository
+        name: azure-alb
+        namespace: flux-system
       interval: 5m
   targetNamespace: azure-alb-system
   values:
