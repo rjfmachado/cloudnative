@@ -14,10 +14,10 @@ spec:
         namespace: flux-system
       interval: 5m
   targetNamespace: azure-alb-system
-  # values:
-  #   albController:
-  #     podIdentity:
-  #       clientID:
-  #         secretRef:
-  #           name: cluster-configuration-protected-parameters
-  #           key: albidentityclientid
+  values:
+    albController:
+      podIdentity:
+        clientID:
+          secretRef:
+            name: cluster-configuration-protected-parameters
+            key: albidentityclientid
