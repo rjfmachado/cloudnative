@@ -337,12 +337,12 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2023-06-01' 
         mode: 'System'
         type: 'VirtualMachineScaleSets'
         orchestratorVersion: kubernetesVersionSystemPool
-        count: 2
+        count: 3
         vmSize: 'Standard_B2s'
         osType: 'Linux'
         enableAutoScaling: true
         maxCount: 4
-        minCount: 2
+        minCount: 3
         osSKU: 'AzureLinux'
         vnetSubnetID: virtualNetwork::subnetAksApp1Nodepool.id
         //podSubnetID: virtualNetwork::subnetAksSystemPods.id
@@ -364,7 +364,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2023-06-01' 
         mode: 'User'
         type: 'VirtualMachineScaleSets'
         orchestratorVersion: kubernetesVersionMonitoringPool
-        count: 2
+        count: 1
         vmSize: 'Standard_B2s'
         osType: 'Linux'
         enableAutoScaling: true
