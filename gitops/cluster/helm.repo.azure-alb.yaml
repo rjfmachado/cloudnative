@@ -4,5 +4,5 @@ metadata:
   name: azure-alb
   namespace: flux-system
 spec:
-  interval: 10m
+  interval: 1m
   url: oci://mcr.microsoft.com/application-lb/charts
