@@ -7,7 +7,7 @@ spec:
   interval: 5m
   chart:
     spec:
-      chart: azure-alb
+      chart: azure-controller
       sourceRef:
         kind: HelmRepository
         name: azure-alb
