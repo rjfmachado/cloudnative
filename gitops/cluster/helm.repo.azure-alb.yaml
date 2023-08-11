@@ -6,3 +6,13 @@ metadata:
 spec:
   interval: 1m
   url: oci://mcr.microsoft.com/application-lb/charts/alb-controller
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: azure-alb
+  namespace: flux-system
+spec:
+  type: oci
+  interval: 5m0s
+  url: oci://mcr.microsoft.com/application-lb/charts/alb-controller
