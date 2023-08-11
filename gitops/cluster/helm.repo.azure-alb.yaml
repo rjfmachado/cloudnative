@@ -5,4 +5,4 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1m
-  url: oci://mcr.microsoft.com/application-lb/charts
+  url: oci://mcr.microsoft.com/application-lb
