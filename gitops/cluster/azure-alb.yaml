@@ -9,7 +9,7 @@ spec:
     spec:
       chart: alb-controller
       sourceRef:
-        kind: OCIRepository
+        kind: HelmRepository
         name: azure-alb
         namespace: flux-system
       interval: 5m
