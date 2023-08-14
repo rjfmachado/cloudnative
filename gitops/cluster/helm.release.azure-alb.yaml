@@ -11,6 +11,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: azure-alb
+        version: 0.4.023971
         namespace: flux-system
       interval: 2m
   targetNamespace: azure-alb-system
