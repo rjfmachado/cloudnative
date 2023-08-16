@@ -3,7 +3,6 @@
 <https://denniszielke.medium.com/advanced-load-balancing-scenarios-with-the-new-azure-application-gateway-for-containers-dd35c4de64df>
 <https://learn.microsoft.com/en-us/azure/application-gateway/for-containers/overview>
 <https://learn.microsoft.com/en-us/azure/application-gateway/for-containers/quickstart-deploy-application-gateway-for-containers-alb-controller?tabs=install-helm-windows>
-<https://helm.sh/docs/chart_template_guide/variables/>
 
 <https://azure.microsoft.com/en-us/blog/transforming-containerized-applications-with-azure-container-storage-now-in-preview/>
 
