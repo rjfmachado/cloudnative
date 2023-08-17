@@ -1,0 +1,24 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: alb-controller
+  namespace: flux-system
+spec:
+  interval: 2m
+  chart:
+    spec:
+      chart: alb-controller
+      version: 0.4.023971
+      sourceRef:
+        kind: OCIRepository
+        name: alb-controller
+        namespace: flux-system
+      interval: 2m
+  targetNamespace: azure-alb-system
+  # values:
+  #   albController:
+  #     podIdentity:
+  #       clientID:
+  #         secretRef:
+  #           name: cluster-configuration-protected-parameters
+  #           key: albidentityclientid
