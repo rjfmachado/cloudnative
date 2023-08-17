@@ -25,7 +25,7 @@ param aksDnsPrefix string = 'ricardmacloudnative'
 
 param workspaceName string = 'azuremonitor'
 
-param omsagent bool = true
+param deployOmsagent bool = true
 
 param deployApplicationGatewayContainers bool = true
 param ApplicationGatewayContainersName string = 'application-gateway-containers'
@@ -54,11 +54,6 @@ resource roleKeyVaultSecretsOfficer 'Microsoft.Authorization/roleDefinitions@202
   scope: subscription()
   name: 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
 }
-
-// resource roleKeyVaultSecretsUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-//   scope: subscription()
-//   name: '4633458b-17de-408a-b874-0445c86b69e6'
-// }
 
 resource roleMonitoringMetricsPublisher 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: subscription()
@@ -325,7 +320,7 @@ resource managedCluster 'Microsoft.ContainerService/managedClusters@2023-06-01' 
     }
     addonProfiles: {
       omsagent: {
-        enabled: omsagent
+        enabled: deployOmsagent
         config: {
           logAnalyticsWorkspaceResourceID: monitorworkspace.id
 
@@ -474,7 +469,7 @@ resource fluxcluster 'Microsoft.KubernetesConfiguration/fluxConfigurations@2023-
 }
 
 //This role assignment enables AKS->LA Fast Alerting experience
-resource FastAlertingRole_Aks_Law 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (omsagent) {
+resource FastAlertingRole_Aks_Law 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (deployOmsagent) {
   scope: managedCluster
   name: guid(managedCluster.id, 'omsagent', roleMonitoringMetricsPublisher.id)
   properties: {
@@ -484,7 +479,7 @@ resource FastAlertingRole_Aks_Law 'Microsoft.Authorization/roleAssignments@2022-
   }
 }
 
-resource AksDiags 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (omsagent) {
+resource AksDiags 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (deployOmsagent) {
   name: 'aksDiags'
   scope: managedCluster
   properties: {
