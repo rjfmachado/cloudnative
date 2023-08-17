@@ -11,8 +11,7 @@ spec:
       name: alb-controller
       namespace: flux-system
     interval: 2m
-targetNamespace:
-  azure-alb-system
+  targetNamespace: azure-alb-system
   # values:
   #   albController:
   #     podIdentity:
