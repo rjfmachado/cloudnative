@@ -5,13 +5,11 @@ metadata:
   namespace: flux-system
 spec:
   interval: 2m
-  spec:
-    sourceRef:
-      kind: OCIRepository
-      name: alb-controller
-      #namespace: flux-system
-    interval: 2m
-    targetNamespace: azure-alb-system
+  sourceRef:
+    kind: OCIRepository
+    name: alb-controller
+    #namespace: flux-system
+  targetNamespace: azure-alb-system
   # values:
   #   albController:
   #     podIdentity:
