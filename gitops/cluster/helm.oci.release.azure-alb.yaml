@@ -5,6 +5,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 2m
+  prune: true
+  wait: true
   sourceRef:
     kind: OCIRepository
     name: alb-controller
