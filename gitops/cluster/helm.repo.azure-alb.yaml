@@ -7,8 +7,6 @@ spec:
   type: oci
   interval: 5m0s
   url: oci://mcr.microsoft.com/application-lb/charts
-  ref:
-    tag: latest
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
