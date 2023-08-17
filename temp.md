@@ -12,6 +12,8 @@
 
 <https://learn.microsoft.com/en-gb/azure/azure-app-configuration/quickstart-azure-kubernetes-service>
 
+<https://learn.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-metric-alerts?tabs=arm-template%2Cazure-portal#enable-with-a-resource-manager-template>
+
 <https://github.com/actions/actions-runner-controller>
 
 <https://azure.microsoft.com/en-us/blog/transforming-containerized-applications-with-azure-container-storage-now-in-preview/>
