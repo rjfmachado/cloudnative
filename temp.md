@@ -32,6 +32,7 @@
 <https://learn.microsoft.com/en-us/azure/aks/planned-maintenance#creating-a-maintenance-window>
 
 <https://learn.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-logging-v2>
+<https://github.com/Azure-Samples/aks-managed-prometheus-and-grafana-bicep/>
 <https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-retention-archive?tabs=api-1%2Cportal-2>
 <https://aka.ms/cicostconfig>
 
