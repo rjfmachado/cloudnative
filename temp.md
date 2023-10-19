@@ -2,6 +2,8 @@
 
 <https://github.com/Azure/AKS/releases/tag/2023-08-27>
 
+<https://radapp.io/>
+
 <https://denniszielke.medium.com/advanced-load-balancing-scenarios-with-the-new-azure-application-gateway-for-containers-dd35c4de64df>
 <https://learn.microsoft.com/en-us/azure/application-gateway/for-containers/overview>
 <https://learn.microsoft.com/en-us/azure/application-gateway/for-containers/quickstart-deploy-application-gateway-for-containers-alb-controller?tabs=install-helm-windows>
